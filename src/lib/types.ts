@@ -16,12 +16,23 @@ export const formSchema = z.object({
   averageMortalityRate: z.coerce.number({ required_error: "Required" }).min(0, "Cannot be negative").max(100, "Cannot exceed 100"),
   averageFeedPrice: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
   averageAdditiveCost: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
+  averageFcr: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
 });
 
 export type CalculationInput = z.infer<typeof formSchema>;
 
 export interface CalculationOutput {
-  costPerKgLiveWeight: number;
-  totalCostSavings: number;
-  roi: number;
+  baseline: {
+    costPerKgLiveWeight: number;
+    totalCost: number;
+  };
+  withAdditive: {
+    costPerKgLiveWeight: number;
+    totalCost: number;
+    improvedFcr: number;
+  };
+  comparison: {
+    totalCostSavings: number;
+    roi: number;
+  };
 }

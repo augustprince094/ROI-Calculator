@@ -1,10 +1,13 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Percent, TrendingUp, Lightbulb, LineChart } from "lucide-react";
+import { DollarSign, Percent, TrendingUp, Lightbulb, LineChart, TrendingDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CalculationOutput } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+
 
 type ResultsPanelProps = {
   results: CalculationOutput | null;
@@ -19,13 +22,26 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults 
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
+      minimumFractionDigits: 3,
     }).format(value);
   };
-
+  
   const formatPercent = (value: number) => {
     if (value === Infinity) return "∞ %";
     return `${value.toFixed(2)} %`;
   };
+
+  const chartData = results ? [
+    { name: 'Baseline', 'Cost/kg': results.baseline.costPerKgLiveWeight.toFixed(3) },
+    { name: 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight.toFixed(3) },
+  ] : [];
+
+  const chartConfig = {
+    "Cost/kg": {
+      label: "Cost/kg",
+      color: "hsl(var(--primary))",
+    },
+  }
 
   if (!showResults) {
     return (
@@ -56,26 +72,44 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults 
                 <Skeleton className="h-28" />
             </div>
           ) : results ? (
+            <>
+            <div className="mb-6">
+                <h4 className="text-lg font-semibold mb-2">Cost per kg Live Weight Comparison</h4>
+                <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                    <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
+                        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                        <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent 
+                                formatter={(value) => formatCurrency(Number(value))}
+                                />}
+                         />
+                        <Bar dataKey="Cost/kg" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                </ChartContainer>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <MetricCard 
-                    icon={DollarSign}
-                    title="Cost / kg Live Weight"
-                    value={formatCurrency(results.costPerKgLiveWeight)}
-                    isPositive={false}
+                    icon={TrendingDown}
+                    title="Improved FCR"
+                    value={results.withAdditive.improvedFcr.toFixed(3)}
+                    isPositive={true} // Lower FCR is better
                 />
                 <MetricCard 
                     icon={TrendingUp}
                     title="Total Cost Savings"
-                    value={formatCurrency(results.totalCostSavings)}
-                    isPositive={results.totalCostSavings > 0}
+                    value={formatCurrency(results.comparison.totalCostSavings)}
+                    isPositive={results.comparison.totalCostSavings > 0}
                 />
                 <MetricCard 
                     icon={Percent}
                     title="Return on Investment (ROI)"
-                    value={formatPercent(results.roi)}
-                    isPositive={results.roi > 0}
+                    value={formatPercent(results.comparison.roi)}
+                    isPositive={results.comparison.roi > 0}
                 />
             </div>
+            </>
           ) : null}
         </CardContent>
       </Card>
@@ -116,10 +150,8 @@ type MetricCardProps = {
 }
 
 function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
-    const valueColorClass = isPositive ? "text-accent-foreground" : "text-destructive";
-
     return (
-        <div className="p-4 border rounded-lg flex flex-col justify-between">
+        <div className="p-4 border rounded-lg flex flex-col justify-between bg-card">
             <div>
                 <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -129,8 +161,7 @@ function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
                 </div>
                 <p className={cn(
                     "text-3xl font-bold tracking-tight",
-                    isPositive && "text-green-600",
-                    !isPositive && Number(value.replace(/[^0-9.-]+/g,"")) < 0 && "text-red-600",
+                     isPositive ? "text-green-600" : "text-red-600",
                 )}>
                     {value}
                 </p>

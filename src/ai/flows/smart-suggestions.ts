@@ -20,6 +20,7 @@ const SmartSuggestionsInputSchema = z.object({
   mortalityRate: z
     .number()
     .describe('The mortality rate of the broilers as a percentage.'),
+  fcr: z.number().describe('The feed conversion ratio (FCR) of the flock.'),
   averageFeedPrice: z.number().describe('The average price of feed in the market'),
   averageAdditiveCost: z
     .number()
@@ -30,6 +31,7 @@ const SmartSuggestionsInputSchema = z.object({
   averageMortalityRate: z
     .number()
     .describe('The average mortality rate of broilers in the market'),
+  averageFcr: z.number().describe('The average FCR in the market'),
 });
 
 export type SmartSuggestionsInput = z.infer<typeof SmartSuggestionsInputSchema>;
@@ -64,10 +66,12 @@ const prompt = ai.definePrompt({
   Additive Cost: {{{additiveCost}}}
   Broiler Weight: {{{broilerWeight}}}
   Mortality Rate: {{{mortalityRate}}}
+  FCR: {{{fcr}}}
   Average Feed Price: {{{averageFeedPrice}}}
   Average Additive Cost: {{{averageAdditiveCost}}}
   Average Broiler Weight: {{{averageBroilerWeight}}}
   Average Mortality Rate: {{{averageMortalityRate}}}
+  Average FCR: {{{averageFcr}}}
 
   Suggestions:`,
 });

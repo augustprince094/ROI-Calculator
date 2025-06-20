@@ -22,18 +22,20 @@ export default function Home() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const handleCalculate = async (data: CalculationInput) => {
+  const handleCalculate = async (data: CalculationInput, fcrImprovement: number) => {
     setIsCalculating(true);
     setSuggestions(null);
     setShowResults(true);
 
-    const calculatedResults = calculateRoi(data);
+    const calculatedResults = calculateRoi(data, fcrImprovement);
     setResults(calculatedResults);
 
     const hasDeviation = 
       checkDeviation(data.feedPrice, data.averageFeedPrice) ||
       checkDeviation(data.broilerWeight, data.averageBroilerWeight) ||
-      checkDeviation(data.mortalityRate, data.averageMortalityRate);
+      checkDeviation(data.mortalityRate, data.averageMortalityRate) ||
+      checkDeviation(calculatedResults.withAdditive.improvedFcr, data.averageFcr);
+
 
     if (hasDeviation) {
       try {
@@ -47,6 +49,8 @@ export default function Home() {
           averageAdditiveCost: data.averageAdditiveCost,
           averageBroilerWeight: data.averageBroilerWeight,
           averageMortalityRate: data.averageMortalityRate,
+          fcr: calculatedResults.withAdditive.improvedFcr,
+          averageFcr: data.averageFcr,
         };
         const aiResult = await getSmartSuggestions(aiInput);
         setSuggestions(aiResult.suggestions);

@@ -42,14 +42,14 @@ import { Separator } from "./ui/separator";
 const LOCAL_STORAGE_KEY = "broiler-roi-scenarios";
 
 type CalculatorPanelProps = {
-  onCalculate: (data: CalculationInput) => void;
+  onCalculate: (data: CalculationInput, fcrImprovement: number) => void;
   isCalculating: boolean;
 };
 
 const additiveData = {
-  "Additive A": { inclusionRate: 500, cost: 12 },
-  "Additive B": { inclusionRate: 300, cost: 15 },
-  "Additive C": { inclusionRate: 700, cost: 10 },
+  "Additive A": { inclusionRate: 500, cost: 12, fcrImprovement: 3 },
+  "Additive B": { inclusionRate: 300, cost: 15, fcrImprovement: 5 },
+  "Additive C": { inclusionRate: 700, cost: 10, fcrImprovement: 2 },
 };
 
 const defaultValues: Partial<CalculationInput> = {
@@ -65,6 +65,7 @@ const defaultValues: Partial<CalculationInput> = {
   averageMortalityRate: 5,
   averageFeedPrice: 0.48,
   averageAdditiveCost: 10,
+  averageFcr: 1.7
 };
 
 export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelProps) {
@@ -144,6 +145,11 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
     }
   };
 
+  const onSubmit = (data: CalculationInput) => {
+    const fcrImprovement = additiveData[data.additiveType as keyof typeof additiveData].fcrImprovement;
+    onCalculate(data, fcrImprovement);
+  };
+
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -201,14 +207,14 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onCalculate)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="p-4 border rounded-lg space-y-4 bg-card">
                      <h3 className="font-semibold text-foreground">Your Farm's Data</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <InputField name="numberOfBroilers" label="Number of Broilers" form={form} />
                         <InputField name="broilerWeight" label="Broiler Weight (kg)" form={form} />
                         <InputField name="mortalityRate" label="Mortality Rate (%)" form={form} />
-                        <InputField name="fcr" label="Feed Conversion Ratio (FCR)" form={form} />
+                        <InputField name="fcr" label="Baseline FCR" form={form} />
                         <InputField name="feedPrice" label="Feed Price ($/kg)" form={form} />
                         <FormField
                             control={form.control}
@@ -254,7 +260,7 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                         <InputField name="averageBroilerWeight" label="Avg. Broiler Weight (kg)" form={form} />
                         <InputField name="averageMortalityRate" label="Avg. Mortality Rate (%)" form={form} />
                         <InputField name="averageFeedPrice" label="Avg. Feed Price ($/kg)" form={form} />
-                        <InputField name="averageAdditiveCost" label="Avg. Additive Cost ($/kg)" form={form} />
+                        <InputField name="averageFcr" label="Avg. FCR" form={form} />
                     </div>
                 </div>
               
