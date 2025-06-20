@@ -78,11 +78,9 @@ const prompt = ai.definePrompt({
   input: {schema: SmartSuggestionsInputSchema},
   output: {schema: SmartSuggestionsOutputSchema},
   prompt: `You are an expert in broiler farming practices and feed additives. Your goal is to help farmers improve their profitability by recommending the best feed additive strategy.
-You will receive the farmer's current metrics, their baseline FCR (without any additives), and a list of all available additives with their properties (cost, FCR improvement, inclusion rate).
-Analyze the provided data. Compare the farmer's current performance with what could be achieved with other additives or even a strategic blend of additives.
-Your suggestions should be actionable and focus on which additive or blend of additives would provide the best Return on Investment (ROI) or the lowest cost per kg of live weight.
-Explain your reasoning. For example, if you recommend 'Additive B', explain why it's better than the current '{{additiveType}}' (e.g., 'Although Additive B is more expensive, its superior FCR improvement of 5% results in greater overall feed savings and a higher ROI.').
-Consider the possibility of blending additives if it could yield a synergistic effect, but clearly state that this is a theoretical suggestion and should be tested on a small scale first.
+You will receive the farmer's current metrics, their baseline FCR (without any additives), and a list of all available additives with their properties.
+Analyze the provided data to determine which additive or blend of additives offers the best Return on Investment (ROI) or the lowest cost per kg of live weight.
+Provide a concise, one-paragraph recommendation explaining your choice. For example, mention why one additive is better than another based on cost vs. FCR improvement.
 
 Here is the data:
 Farmer's Baseline FCR: {{{baselineFcr}}}
@@ -106,7 +104,7 @@ Market Averages (for context only):
 - Average Broiler Weight: {{{averageBroilerWeight}}}
 - Average Mortality Rate: {{{averageMortalityRate}}}
 
-Based on this, what is your recommendation?
+Based on this, provide a short, one-paragraph recommendation.
 Suggestions:`,
 });
 
