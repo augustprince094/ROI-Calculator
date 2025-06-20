@@ -5,16 +5,13 @@ import type { z } from 'zod';
 
 import type { CalculationInput, CalculationOutput } from '@/lib/types';
 import { calculateRoi } from '@/lib/calculator';
+import { allAdditives } from '@/lib/additive-data';
 import { getSmartSuggestions, type SmartSuggestionsInput } from '@/ai/flows/smart-suggestions';
 
 import { CalculatorPanel } from '@/components/calculator-panel';
 import { ResultsPanel } from '@/components/results-panel';
 import { Toaster } from "@/components/ui/toaster";
 import { Leaf, Rss } from 'lucide-react';
-
-function checkDeviation(value: number, average: number, threshold: number = 0.05): boolean {
-  return Math.abs(value - average) / average > threshold;
-}
 
 export default function Home() {
   const [results, setResults] = useState<CalculationOutput | null>(null);
@@ -30,36 +27,25 @@ export default function Home() {
     const calculatedResults = calculateRoi(data, fcrImprovement);
     setResults(calculatedResults);
 
-    const hasDeviation = 
-      checkDeviation(data.feedPrice, data.averageFeedPrice) ||
-      checkDeviation(data.broilerWeight, data.averageBroilerWeight) ||
-      checkDeviation(data.mortalityRate, data.averageMortalityRate) ||
-      checkDeviation(calculatedResults.withAdditive.improvedFcr, data.averageFcr);
-
-
-    if (hasDeviation) {
-      try {
-        const aiInput: SmartSuggestionsInput = {
-          additiveType: data.additiveType,
-          feedPrice: data.feedPrice,
-          additiveCost: data.additiveCost,
-          broilerWeight: data.broilerWeight,
-          mortalityRate: data.mortalityRate,
-          averageFeedPrice: data.averageFeedPrice,
-          averageAdditiveCost: data.averageAdditiveCost,
-          averageBroilerWeight: data.averageBroilerWeight,
-          averageMortalityRate: data.averageMortalityRate,
-          fcr: calculatedResults.withAdditive.improvedFcr,
-          averageFcr: data.averageFcr,
-        };
-        const aiResult = await getSmartSuggestions(aiInput);
-        setSuggestions(aiResult.suggestions);
-      } catch (error) {
-        console.error("Error fetching smart suggestions:", error);
-        setSuggestions("Could not retrieve AI suggestions at this time. Please try again later.");
-      }
-    } else {
-      setSuggestions(null); // Clear suggestions if no deviation
+    try {
+      const aiInput: SmartSuggestionsInput = {
+        additiveType: data.additiveType,
+        feedPrice: data.feedPrice,
+        broilerWeight: data.broilerWeight,
+        mortalityRate: data.mortalityRate,
+        baselineFcr: data.fcr,
+        currentFcr: calculatedResults.withAdditive.improvedFcr,
+        averageFeedPrice: data.averageFeedPrice,
+        averageBroilerWeight: data.averageBroilerWeight,
+        averageMortalityRate: data.averageMortalityRate,
+        averageFcr: data.averageFcr,
+        allAdditives: allAdditives,
+      };
+      const aiResult = await getSmartSuggestions(aiInput);
+      setSuggestions(aiResult.suggestions);
+    } catch (error) {
+      console.error("Error fetching smart suggestions:", error);
+      setSuggestions("Could not retrieve AI suggestions at this time. Please try again later.");
     }
 
     setIsCalculating(false);

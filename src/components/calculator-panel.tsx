@@ -38,18 +38,13 @@ import { useToast } from "@/hooks/use-toast";
 import { formSchema } from "@/lib/types";
 import type { CalculationInput } from "@/lib/types";
 import { Separator } from "./ui/separator";
+import { additiveData, type AdditiveName } from "@/lib/additive-data";
 
 const LOCAL_STORAGE_KEY = "broiler-roi-scenarios";
 
 type CalculatorPanelProps = {
   onCalculate: (data: CalculationInput, fcrImprovement: number) => void;
   isCalculating: boolean;
-};
-
-const additiveData = {
-  "Additive A": { inclusionRate: 500, cost: 12, fcrImprovement: 3 },
-  "Additive B": { inclusionRate: 300, cost: 15, fcrImprovement: 5 },
-  "Additive C": { inclusionRate: 700, cost: 10, fcrImprovement: 2 },
 };
 
 const defaultValues: Partial<CalculationInput> = {
@@ -146,7 +141,7 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
   };
 
   const onSubmit = (data: CalculationInput) => {
-    const fcrImprovement = additiveData[data.additiveType as keyof typeof additiveData].fcrImprovement;
+    const fcrImprovement = additiveData[data.additiveType as AdditiveName].fcrImprovement;
     onCalculate(data, fcrImprovement);
   };
 
@@ -239,9 +234,9 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        <SelectItem value="Additive A">Additive A</SelectItem>
-                                        <SelectItem value="Additive B">Additive B</SelectItem>
-                                        <SelectItem value="Additive C">Additive C</SelectItem>
+                                        {Object.keys(additiveData).map((name) => (
+                                            <SelectItem key={name} value={name}>{name}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />

@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import { additiveData } from './additive-data';
+
+const additiveNames = Object.keys(additiveData) as [keyof typeof additiveData, ...(keyof typeof additiveData)[]];
+
 
 export const formSchema = z.object({
   // User's farm data
@@ -7,7 +11,7 @@ export const formSchema = z.object({
   mortalityRate: z.coerce.number({ required_error: "Required" }).min(0, "Cannot be negative").max(100, "Cannot exceed 100"),
   fcr: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
   feedPrice: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
-  additiveType: z.enum(["Additive A", "Additive B", "Additive C"], { required_error: "Required" }),
+  additiveType: z.enum(additiveNames, { required_error: "Required" }),
   additiveInclusionRate: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
   additiveCost: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
   
