@@ -46,12 +46,19 @@ type CalculatorPanelProps = {
   isCalculating: boolean;
 };
 
+const additiveData = {
+  "Additive A": { inclusionRate: 500, cost: 12 },
+  "Additive B": { inclusionRate: 300, cost: 15 },
+  "Additive C": { inclusionRate: 700, cost: 10 },
+};
+
 const defaultValues: Partial<CalculationInput> = {
   numberOfBroilers: 10000,
   broilerWeight: 2.5,
   mortalityRate: 4,
   fcr: 1.6,
   feedPrice: 0.45,
+  additiveType: "Additive A",
   additiveInclusionRate: 500,
   additiveCost: 12,
   averageBroilerWeight: 2.4,
@@ -203,6 +210,38 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                         <InputField name="mortalityRate" label="Mortality Rate (%)" form={form} />
                         <InputField name="fcr" label="Feed Conversion Ratio (FCR)" form={form} />
                         <InputField name="feedPrice" label="Feed Price ($/kg)" form={form} />
+                        <FormField
+                            control={form.control}
+                            name="additiveType"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Additive Type</FormLabel>
+                                <Select
+                                    onValueChange={(value) => {
+                                        field.onChange(value);
+                                        const data = additiveData[value as keyof typeof additiveData];
+                                        if (data) {
+                                            form.setValue("additiveInclusionRate", data.inclusionRate);
+                                            form.setValue("additiveCost", data.cost);
+                                        }
+                                    }}
+                                    defaultValue={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select an additive" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Additive A">Additive A</SelectItem>
+                                        <SelectItem value="Additive B">Additive B</SelectItem>
+                                        <SelectItem value="Additive C">Additive C</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
                         <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
                         <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} />
                     </div>

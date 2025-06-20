@@ -13,6 +13,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SmartSuggestionsInputSchema = z.object({
+  additiveType: z.string().describe('The type of additive used.'),
   feedPrice: z.number().describe('The price of the feed in $ per kg.'),
   additiveCost: z.number().describe('The cost of the feed additive in $ per kg.'),
   broilerWeight: z.number().describe('The average weight of the broiler in kg.'),
@@ -56,7 +57,9 @@ const prompt = ai.definePrompt({
   average metrics in the market. If the user's metrics deviate more than 5% from
   the average metrics, you will provide suggestions for optimizing their
   broiler farming practices to improve their ROI and cost per kg live weight.
+  Take into account the type of additive being used.
 
+  Additive Type: {{{additiveType}}}
   Feed Price: {{{feedPrice}}}
   Additive Cost: {{{additiveCost}}}
   Broiler Weight: {{{broilerWeight}}}

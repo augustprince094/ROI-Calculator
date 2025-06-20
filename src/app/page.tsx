@@ -38,6 +38,7 @@ export default function Home() {
     if (hasDeviation) {
       try {
         const aiInput: SmartSuggestionsInput = {
+          additiveType: data.additiveType,
           feedPrice: data.feedPrice,
           additiveCost: data.additiveCost,
           broilerWeight: data.broilerWeight,
