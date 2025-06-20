@@ -36,18 +36,6 @@ const SmartSuggestionsInputSchema = z.object({
     .describe(
       "The user's current feed conversion ratio (FCR) with the selected additive."
     ),
-
-  averageFeedPrice: z
-    .number()
-    .describe('The average price of feed in the market.'),
-  averageBroilerWeight: z
-    .number()
-    .describe('The average weight of broilers in the market.'),
-  averageMortalityRate: z
-    .number()
-    .describe('The average mortality rate of broilers in the market.'),
-  averageFcr: z.number().describe('The average FCR in the market.'),
-
   allAdditives: z
     .array(AdditiveInfoSchema)
     .describe(
@@ -97,12 +85,6 @@ Available Additives:
   - FCR Improvement: {{fcrImprovement}}%
   - Inclusion Rate: {{inclusionRate}} g/ton
 {{/each}}
-
-Market Averages (for context only):
-- Average FCR: {{{averageFcr}}}
-- Average Feed Price: {{{averageFeedPrice}}}
-- Average Broiler Weight: {{{averageBroilerWeight}}}
-- Average Mortality Rate: {{{averageMortalityRate}}}
 
 Based on this, provide a short, one-paragraph recommendation.
 Suggestions:`,

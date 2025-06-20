@@ -41,11 +41,6 @@ const defaultValues: Partial<CalculationInput> = {
   additiveType: "Additive A",
   additiveInclusionRate: 500,
   additiveCost: 12,
-  averageBroilerWeight: 2.4,
-  averageMortalityRate: 5,
-  averageFeedPrice: 0.48,
-  averageAdditiveCost: 10,
-  averageFcr: 1.7
 };
 
 export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelProps) {
@@ -118,17 +113,6 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                       />
                       <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
                       <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} />
-                  </div>
-              </div>
-
-              <div className="p-4 border rounded-lg space-y-4 bg-card">
-                    <h3 className="font-semibold text-foreground">Market Average Data</h3>
-                    <p className="text-sm text-muted-foreground -mt-2">Used for baseline comparison and AI suggestions.</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <InputField name="averageBroilerWeight" label="Avg. Broiler Weight (kg)" form={form} />
-                      <InputField name="averageMortalityRate" label="Avg. Mortality Rate (%)" form={form} />
-                      <InputField name="averageFeedPrice" label="Avg. Feed Price ($/kg)" form={form} />
-                      <InputField name="averageFcr" label="Avg. FCR" form={form} />
                   </div>
               </div>
             

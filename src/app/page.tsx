@@ -35,10 +35,6 @@ export default function Home() {
         mortalityRate: data.mortalityRate,
         baselineFcr: data.fcr,
         currentFcr: calculatedResults.withAdditive.improvedFcr,
-        averageFeedPrice: data.averageFeedPrice,
-        averageBroilerWeight: data.averageBroilerWeight,
-        averageMortalityRate: data.averageMortalityRate,
-        averageFcr: data.averageFcr,
         allAdditives: allAdditives,
       };
       const aiResult = await getSmartSuggestions(aiInput);
