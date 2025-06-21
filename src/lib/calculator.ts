@@ -1,14 +1,17 @@
 import type { CalculationInput, CalculationOutput } from '@/lib/types';
 
 export function calculateRoi(data: CalculationInput, fcrImprovement: number): CalculationOutput {
+  // The user inputs feed price as "$/kg live weight".
+  // To get the price of feed per kg, we divide this by the FCR.
+  const pricePerKgFeed = data.fcr > 0 ? data.feedCostPerLw / data.fcr : 0;
+  
   const improvedFcr = data.fcr * (1 - fcrImprovement / 100);
 
   // --- Baseline Calculation (Without Additive Effect on FCR) ---
   const survivingBroilersBaseline = data.numberOfBroilers * (1 - data.mortalityRate / 100);
   const totalLiveWeightBaseline = survivingBroilersBaseline * data.broilerWeight;
   const totalFeedConsumedBaseline = totalLiveWeightBaseline * data.fcr;
-  const totalFeedCostBaseline = totalFeedConsumedBaseline * data.feedPrice;
-  // Note: Baseline cost doesn't include additive, as we compare against it.
+  const totalFeedCostBaseline = totalFeedConsumedBaseline * pricePerKgFeed;
   const costPerKgLiveWeightBaseline = totalLiveWeightBaseline > 0 ? totalFeedCostBaseline / totalLiveWeightBaseline : 0;
 
   // --- Calculation With Additive ---
@@ -19,7 +22,7 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
   
   const totalAdditiveConsumed = (totalFeedConsumedTonsWithAdditive * data.additiveInclusionRate) / 1000;
 
-  const totalFeedCostWithAdditive = totalFeedConsumedWithAdditive * data.feedPrice;
+  const totalFeedCostWithAdditive = totalFeedConsumedWithAdditive * pricePerKgFeed;
   const totalAdditiveCost = totalAdditiveConsumed * data.additiveCost;
   const totalCostWithAdditive = totalFeedCostWithAdditive + totalAdditiveCost;
 

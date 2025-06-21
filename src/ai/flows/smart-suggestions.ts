@@ -21,7 +21,9 @@ const AdditiveInfoSchema = z.object({
 
 const SmartSuggestionsInputSchema = z.object({
   additiveType: z.string().describe('The type of additive currently used.'),
-  feedPrice: z.number().describe('The price of the feed in $ per kg.'),
+  feedCostPerLw: z
+    .number()
+    .describe('The cost of the feed per kg of live weight in $.'),
   broilerWeight: z.number().describe('The average weight of the broiler in kg.'),
   mortalityRate: z
     .number()
@@ -74,7 +76,7 @@ Here is the data:
 Farmer's Baseline FCR: {{{baselineFcr}}}
 Farmer's Current Metrics (with {{{additiveType}}}):
 - Current FCR: {{{currentFcr}}}
-- Feed Price: {{{feedPrice}}} $/kg
+- Feed Cost: {{{feedCostPerLw}}} $/kg live weight
 - Broiler Weight: {{{broilerWeight}}} kg
 - Mortality Rate: {{{mortalityRate}}} %
 

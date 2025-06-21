@@ -37,7 +37,7 @@ const defaultValues: Partial<CalculationInput> = {
   broilerWeight: 2.5,
   mortalityRate: 4,
   fcr: 1.6,
-  feedPrice: 0.45,
+  feedCostPerLw: 0.72,
   additiveType: "Additive A",
   additiveInclusionRate: 500,
   additiveCost: 12,
@@ -72,7 +72,7 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                       <InputField name="broilerWeight" label="Broiler Weight (kg)" form={form} />
                       <InputField name="mortalityRate" label="Mortality Rate (%)" form={form} />
                       <InputField name="fcr" label="Baseline FCR" form={form} />
-                      <InputField name="feedPrice" label="Feed Price ($/broiler weight)" form={form} />
+                      <InputField name="feedCostPerLw" label="Feed Cost ($/kg live weight)" form={form} />
                   </div>
               </div>
 

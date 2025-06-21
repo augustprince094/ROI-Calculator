@@ -30,7 +30,7 @@ export default function Home() {
     try {
       const aiInput: SmartSuggestionsInput = {
         additiveType: data.additiveType,
-        feedPrice: data.feedPrice,
+        feedCostPerLw: data.feedCostPerLw,
         broilerWeight: data.broilerWeight,
         mortalityRate: data.mortalityRate,
         baselineFcr: data.fcr,
