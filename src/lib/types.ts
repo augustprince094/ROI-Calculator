@@ -31,5 +31,6 @@ export interface CalculationOutput {
   comparison: {
     totalCostSavings: number;
     roi: number;
+    costReductionPercentage: number;
   };
 }

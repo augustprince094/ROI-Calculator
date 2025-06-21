@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Percent, TrendingUp, Lightbulb, LineChart, TrendingDown } from "lucide-react";
+import { ChevronsDown, Percent, TrendingUp, Lightbulb, LineChart, TrendingDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CalculationOutput } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -66,7 +66,8 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults 
         </CardHeader>
         <CardContent>
           {isCalculating && !results ? (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <Skeleton className="h-28" />
                 <Skeleton className="h-28" />
                 <Skeleton className="h-28" />
                 <Skeleton className="h-28" />
@@ -89,12 +90,18 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults 
                     </BarChart>
                 </ChartContainer>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <MetricCard 
                     icon={TrendingDown}
                     title="Improved FCR"
                     value={results.withAdditive.improvedFcr.toFixed(3)}
                     isPositive={true} // Lower FCR is better
+                />
+                 <MetricCard 
+                    icon={ChevronsDown}
+                    title="Cost Reduction"
+                    value={formatPercent(results.comparison.costReductionPercentage)}
+                    isPositive={results.comparison.costReductionPercentage > 0}
                 />
                 <MetricCard 
                     icon={TrendingUp}

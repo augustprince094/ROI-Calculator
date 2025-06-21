@@ -31,6 +31,9 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
   // --- Savings & ROI Calculation ---
   const totalCostSavings = totalFeedCostBaseline - totalCostWithAdditive;
   const roi = totalAdditiveCost > 0 ? (totalCostSavings / totalAdditiveCost) * 100 : (totalCostSavings > 0 ? Infinity : 0);
+  const costReductionPercentage = costPerKgLiveWeightBaseline > 0
+    ? ((costPerKgLiveWeightBaseline - costPerKgLiveWeightWithAdditive) / costPerKgLiveWeightBaseline) * 100
+    : 0;
   
   return {
     baseline: {
@@ -45,6 +48,7 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
     comparison: {
       totalCostSavings,
       roi,
+      costReductionPercentage,
     }
   };
 }
