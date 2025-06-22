@@ -34,7 +34,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
   };
 
   const baselineColor = "#AEAEAE";
-  const additiveColor = additiveType ? additiveData[additiveType as AdditiveName].color : "hsl(var(--primary))";
+  const additiveColor = (additiveType && additiveData[additiveType as AdditiveName]?.color) || "hsl(var(--primary))";
 
   const chartData = results ? [
     { name: 'Baseline', 'Cost/kg': results.baseline.costPerKgLiveWeight.toFixed(3), fill: baselineColor },
