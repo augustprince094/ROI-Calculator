@@ -55,7 +55,7 @@ export default function Home() {
       <main className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-screen-2xl relative">
           <Image
-            src="https://jefo.ca/en/ippe-2020/logo/"
+            src="https://jefo.ca/wp-content/uploads/2020/01/logo.png"
             alt="Jefo Logo"
             width={200}
             height={64}
