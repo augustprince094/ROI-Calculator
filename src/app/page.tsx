@@ -55,10 +55,11 @@ export default function Home() {
       <main className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-screen-2xl relative">
           <Image
-            src="/jefo-logo.png"
+            src="https://placehold.co/200x64.png"
             alt="Jefo Logo"
             width={200}
             height={64}
+            data-ai-hint="logo company"
             className="absolute top-4 right-4 hidden md:block"
           />
           <header className="mb-8 text-center pt-8 md:pt-0">
