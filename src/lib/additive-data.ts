@@ -1,7 +1,7 @@
 export const additiveData = {
-  "Jefo Pro Solution": { inclusionRate: 150, cost: 12, fcrImprovement: 2.5 },
-  "Jefo P(OA+EO)": { inclusionRate: 200, cost: 15, fcrImprovement: 3 },
-  "Belfeed": { inclusionRate: 150, cost: 10, fcrImprovement: 5 },
+  "Jefo Pro Solution": { inclusionRate: 150, cost: 12, fcrImprovement: 2.5, color: "#FCB839" },
+  "Jefo P(OA+EO)": { inclusionRate: 200, cost: 15, fcrImprovement: 3, color: "#C00000" },
+  "Belfeed": { inclusionRate: 150, cost: 10, fcrImprovement: 5, color: "hsl(var(--primary))" },
 };
 
 export type AdditiveName = keyof typeof additiveData;

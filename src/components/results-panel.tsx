@@ -5,8 +5,9 @@ import { ChevronsDown, Percent, TrendingUp, Lightbulb, LineChart, TrendingDown }
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CalculationOutput } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { additiveData, type AdditiveName } from "@/lib/additive-data";
 
 
 type ResultsPanelProps = {
@@ -23,7 +24,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
- minimumFractionDigits: 0,
+      minimumFractionDigits: 0,
     }).format(value);
   };
   
@@ -32,15 +33,17 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
     return `${value.toFixed(2)} %`;
   };
 
+  const baselineColor = "#AEAEAE";
+  const additiveColor = additiveType ? additiveData[additiveType as AdditiveName].color : "hsl(var(--primary))";
+
   const chartData = results ? [
-    { name: 'Baseline', 'Cost/kg': results.baseline.costPerKgLiveWeight.toFixed(3) },
-    { name: additiveType || 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight.toFixed(3) },
+    { name: 'Baseline', 'Cost/kg': results.baseline.costPerKgLiveWeight.toFixed(3), fill: baselineColor },
+    { name: additiveType || 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight.toFixed(3), fill: additiveColor },
   ] : [];
 
   const chartConfig = {
     "Cost/kg": {
       label: "Cost/kg",
-      color: "hsl(var(--primary))",
     },
   }
 
@@ -87,7 +90,11 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                                 formatter={(value) => formatCurrency(Number(value))}
                                 />}
                          />
-                        <Bar dataKey="Cost/kg" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Cost/kg" radius={[4, 4, 0, 0]}>
+                            {chartData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.fill} />
+                            ))}
+                        </Bar>
                     </BarChart>
                 </ChartContainer>
             </div>
@@ -95,7 +102,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                 <MetricCard 
                     icon={TrendingDown}
                     title="Improved FCR"
- value={parseFloat(results.withAdditive.improvedFcr.toFixed(2)).toString()}
+                    value={parseFloat(results.withAdditive.improvedFcr.toFixed(2)).toString()}
                     isPositive={true} // Lower FCR is better
                 />
                  <MetricCard 
