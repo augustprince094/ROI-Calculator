@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import Image from 'next/image';
 import type { z } from 'zod';
 
 import type { CalculationInput, CalculationOutput } from '@/lib/types';
@@ -54,15 +53,7 @@ export default function Home() {
     <>
       <main className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-screen-2xl relative">
-          <Image
-            src="https://jefo.ca/wp-content/uploads/2020/01/logo.png"
-            alt="Jefo Logo"
-            width={200}
-            height={64}
-            data-ai-hint="logo company"
-            className="absolute top-4 right-4 hidden md:block"
-          />
-          <header className="mb-8 text-center pt-8 md:pt-0">
+          <header className="mb-8 text-center pt-8">
             <div className="inline-flex items-center gap-3 mb-2">
                 <div className="p-2 bg-primary/20 rounded-lg">
                     <Rss className="h-8 w-8 text-primary" />
