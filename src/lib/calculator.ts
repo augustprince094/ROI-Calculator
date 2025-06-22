@@ -7,7 +7,7 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
   const pricePerKgFeed = data.fcr > 0 ? data.feedCostPerLw / data.fcr : 0;
   
   // Calculate the new, improved Feed Conversion Ratio (FCR)
-  const improvedFcr = data.fcr * (1 - fcrImprovement / 100);
+  const improvedFcr = data.fcr - (data.fcr * fcrImprovement / 100);
 
   // --- Baseline Calculation (Without Additive Effect on FCR) ---
   // This represents the scenario without using any Jefo solution.
@@ -61,10 +61,10 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
     withAdditive: {
       costPerKgLiveWeight: costPerKgLiveWeightWithAdditive,
       totalCost: totalCostWithAdditive,
-      improvedFcr: improvedFcr,
+ improvedFcr: parseFloat(improvedFcr.toFixed(2)),
     },
     comparison: {
-      totalCostSavings,
+ totalCostSavings: Math.round(totalCostSavings),
       roi,
       costReductionPercentage,
     }

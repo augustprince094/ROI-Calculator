@@ -14,15 +14,16 @@ type ResultsPanelProps = {
   suggestions: string | null;
   isCalculating: boolean;
   showResults: boolean;
+  additiveType: string | null;
 };
 
-export function ResultsPanel({ results, suggestions, isCalculating, showResults }: ResultsPanelProps) {
+export function ResultsPanel({ results, suggestions, isCalculating, showResults, additiveType }: ResultsPanelProps) {
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-      minimumFractionDigits: 3,
+ minimumFractionDigits: 0,
     }).format(value);
   };
   
@@ -33,7 +34,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults 
 
   const chartData = results ? [
     { name: 'Baseline', 'Cost/kg': results.baseline.costPerKgLiveWeight.toFixed(3) },
-    { name: 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight.toFixed(3) },
+    { name: additiveType || 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight.toFixed(3) },
   ] : [];
 
   const chartConfig = {
@@ -94,7 +95,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults 
                 <MetricCard 
                     icon={TrendingDown}
                     title="Improved FCR"
-                    value={results.withAdditive.improvedFcr.toFixed(3)}
+ value={parseFloat(results.withAdditive.improvedFcr.toFixed(2)).toString()}
                     isPositive={true} // Lower FCR is better
                 />
                  <MetricCard 

@@ -38,8 +38,8 @@ const defaultValues: Partial<CalculationInput> = {
   mortalityRate: 4,
   fcr: 1.6,
   feedCostPerLw: 0.72,
-  additiveType: "Additive A",
-  additiveInclusionRate: 500,
+  additiveType: "Jefo Pro Solution",
+  additiveInclusionRate: 150,
   additiveCost: 12,
 };
 

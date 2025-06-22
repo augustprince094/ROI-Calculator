@@ -18,11 +18,13 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [selectedAdditive, setSelectedAdditive] = useState<string | null>(null);
 
   const handleCalculate = async (data: CalculationInput, fcrImprovement: number) => {
     setIsCalculating(true);
     setSuggestions(null);
     setShowResults(true);
+    setSelectedAdditive(data.additiveType);
 
     const calculatedResults = calculateRoi(data, fcrImprovement);
     setResults(calculatedResults);
@@ -78,6 +80,7 @@ export default function Home() {
                 suggestions={suggestions} 
                 isCalculating={isCalculating}
                 showResults={showResults}
+                additiveType={selectedAdditive}
               />
             </div>
           </div>
