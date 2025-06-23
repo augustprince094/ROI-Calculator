@@ -30,7 +30,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
   
   const formatPercent = (value: number) => {
     if (value === Infinity) return "∞ %";
-    return `${value.toFixed(2)} %`;
+    return `${value.toFixed(1)} %`;
   };
 
   const baselineColor = "#AEAEAE";
