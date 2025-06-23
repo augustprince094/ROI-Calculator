@@ -63,7 +63,7 @@ export default function Home() {
                 </div>
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl font-headline">
-              Jefo ROI Optimizer
+              Jefo ROI Optimizer for Broilers
             </h1>
             <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
               Calculate ROI and cost per kg live weight for your broiler flock when using feed additives. Get smart insights to boost your profitability.

@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Jefo ROI Optimizer',
+  title: 'Jefo ROI Optimizer for Broilers',
   description: 'An application to calculate and optimize the ROI for broiler feed additives.',
 };
 

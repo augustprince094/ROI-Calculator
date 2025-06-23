@@ -1,4 +1,4 @@
-# Jefo ROI Optimizer
+# Jefo ROI Optimizer for Broilers
 
 This is a Next.js application designed for broiler farmers to calculate and optimize their Return on Investment (ROI) when using feed additives. The application provides a simple interface to input farm data and receive detailed financial metrics, along with AI-powered suggestions to enhance profitability.
 
