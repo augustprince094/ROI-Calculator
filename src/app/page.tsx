@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { z } from 'zod';
+import { DollarSign, Leaf } from 'lucide-react';
 
 import type { CalculationInput, CalculationOutput } from '@/lib/types';
 import { calculateRoi } from '@/lib/calculator';
@@ -53,6 +54,10 @@ export default function Home() {
       <main className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-screen-2xl relative">
           <header className="mb-8 text-center pt-8">
+            <div className="flex justify-center items-center gap-4 mb-4">
+              <DollarSign className="h-10 w-10 text-primary" />
+              <Leaf className="h-10 w-10 text-accent" />
+            </div>
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl font-headline">
               Jefo ROI Optimizer for Broilers
             </h1>
