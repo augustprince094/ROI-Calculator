@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import type { z } from 'zod';
-import { JefoLogo } from '@/components/jefo-logo';
 
 import type { CalculationInput, CalculationOutput } from '@/lib/types';
 import { calculateRoi } from '@/lib/calculator';
@@ -54,9 +53,6 @@ export default function Home() {
       <main className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-screen-2xl relative">
           <header className="mb-8 text-center pt-8">
-            <div className="flex justify-center mb-4">
-                <JefoLogo className="h-20 w-auto" />
-            </div>
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl font-headline">
               Jefo ROI Optimizer for Broilers
             </h1>
