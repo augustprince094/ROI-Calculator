@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { z } from 'zod';
+import Image from 'next/image';
 
 import type { CalculationInput, CalculationOutput } from '@/lib/types';
 import { calculateRoi } from '@/lib/calculator';
@@ -11,7 +12,6 @@ import { getSmartSuggestions, type SmartSuggestionsInput } from '@/ai/flows/smar
 import { CalculatorPanel } from '@/components/calculator-panel';
 import { ResultsPanel } from '@/components/results-panel';
 import { Toaster } from "@/components/ui/toaster";
-import { Leaf, Rss } from 'lucide-react';
 
 export default function Home() {
   const [results, setResults] = useState<CalculationOutput | null>(null);
@@ -54,13 +54,14 @@ export default function Home() {
       <main className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-screen-2xl relative">
           <header className="mb-8 text-center pt-8">
-            <div className="inline-flex items-center gap-3 mb-2">
-                <div className="p-2 bg-primary/20 rounded-lg">
-                    <Rss className="h-8 w-8 text-primary" />
-                </div>
-                 <div className="p-2 bg-accent/20 rounded-lg">
-                    <Leaf className="h-8 w-8 text-accent-foreground" />
-                </div>
+            <div className="flex justify-center mb-4">
+                <Image
+                    src="https://jefo.ca/wp-content/uploads/2021/10/Jefo_Logo_RGB_POS-1.png"
+                    alt="Jefo Logo"
+                    width={265}
+                    height={80}
+                    priority
+                />
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl font-headline">
               Jefo ROI Optimizer for Broilers
