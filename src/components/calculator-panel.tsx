@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formSchema } from "@/lib/types";
 import type { CalculationInput } from "@/lib/types";
 import { additiveData, type AdditiveName } from "@/lib/additive-data";
@@ -41,6 +42,7 @@ const defaultValues: Partial<CalculationInput> = {
   additiveType: "Jefo Pro Solution",
   additiveInclusionRate: 125,
   additiveCost: 12,
+  jefoProApplicationType: 'on-top',
 };
 
 export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelProps) {
@@ -48,6 +50,8 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  const selectedAdditive = form.watch("additiveType");
 
   const onSubmit = (data: CalculationInput) => {
     const fcrImprovement = additiveData[data.additiveType as AdditiveName].fcrImprovement;
@@ -93,6 +97,12 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                                           form.setValue("additiveInclusionRate", data.inclusionRate);
                                           form.setValue("additiveCost", data.cost);
                                       }
+                                      if (value !== 'Jefo Pro Solution') {
+                                        form.clearErrors('jefoProApplicationType');
+                                        form.setValue('jefoProApplicationType', undefined);
+                                      } else {
+                                        form.setValue('jefoProApplicationType', 'on-top');
+                                      }
                                   }}
                                   defaultValue={field.value}
                               >
@@ -114,6 +124,40 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                       <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
                       <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} />
                   </div>
+                    
+                    {selectedAdditive === "Jefo Pro Solution" && (
+                        <FormField
+                            control={form.control}
+                            name="jefoProApplicationType"
+                            render={({ field }) => (
+                            <FormItem className="space-y-2 pt-2">
+                                <FormLabel>Application Type</FormLabel>
+                                <FormControl>
+                                <RadioGroup
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                    className="flex items-center space-x-4"
+                                >
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                        <RadioGroupItem value="matrix" />
+                                    </FormControl>
+                                    <FormLabel className="font-normal cursor-pointer">Matrix</FormLabel>
+                                    </FormItem>
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                        <RadioGroupItem value="on-top" />
+                                    </FormControl>
+                                    <FormLabel className="font-normal cursor-pointer">On-top</FormLabel>
+                                    </FormItem>
+                                </RadioGroup>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                    )}
+
               </div>
             
             <Button type="submit" className="w-full" size="lg" disabled={isCalculating}>
