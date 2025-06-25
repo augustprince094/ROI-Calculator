@@ -146,8 +146,8 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                 </div>
                 <CardDescription>
                     AI-powered insights to help optimize your farming practices.
-                </Description>
-            </Header>
+                </CardDescription>
+            </CardHeader>
             <CardContent>
                 {isCalculating && !suggestions ? (
                     <div className="space-y-2">
