@@ -91,7 +91,7 @@ const feedIngredients = [
     { name: "Corn", quantityKg: 579.2, pricePerTon: 232 },
     { name: "Soybean meal", quantityKg: 396, pricePerTon: 624 },
     { name: "Soybean oil", quantityKg: 43.6, pricePerTon: 1600 },
-    { name: "Synthetic AA", quantityKg: 6.5, pricePerTon: 3250 },
+    { name: "Synthetic AA", quantityKg: 6.5, pricePerTon: 2854 },
     { name: "Other raw materials", quantityKg: 26.4, pricePerTon: 100 }
 ];
 
