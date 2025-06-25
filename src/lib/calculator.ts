@@ -86,13 +86,14 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
 
 /**
  * A database of feed ingredients for a standard 1-ton (1000kg) broiler feed formulation.
+ * NOTE: Corn quantity adjusted to make the total sum 1000kg. Other raw material price updated per user request.
  */
 const feedIngredients = [
-    { name: "Corn", quantityKg: 579.2, pricePerTon: 232 },
+    { name: "Corn", quantityKg: 527.5, pricePerTon: 232 },
     { name: "Soybean meal", quantityKg: 396, pricePerTon: 624 },
     { name: "Soybean oil", quantityKg: 43.6, pricePerTon: 1600 },
     { name: "Synthetic AA", quantityKg: 6.5, pricePerTon: 2854 },
-    { name: "Other raw materials", quantityKg: 26.4, pricePerTon: 100 }
+    { name: "Other raw materials", quantityKg: 26.4, pricePerTon: 571 }
 ];
 
 /**
@@ -116,45 +117,38 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
     // 2. Define the reformulated diet
     const reformulatedIngredients = JSON.parse(JSON.stringify(feedIngredients));
     
-    const originalQuantities: { [key: string]: number } = {};
-    feedIngredients.forEach(ing => {
-        originalQuantities[ing.name] = ing.quantityKg;
-    });
+    let sumOfNonBalancingIngredients = 0;
 
-    let totalWeightChange = 0;
-
-    // Apply percentage changes for each specified ingredient
+    // Apply percentage changes for each non-balancing ingredient
     reformulatedIngredients.forEach((ingredient: { name: string; quantityKg: number }) => {
-        let change = 0;
+        if (ingredient.name === "Corn") return; // Skip the balancing ingredient for now
+
+        let changePercent = 0;
         switch (ingredient.name) {
-            case "Corn":
-                change = originalQuantities[ingredient.name] * 0.031; // 3.1% increase
-                ingredient.quantityKg += change;
-                totalWeightChange += change;
-                break;
             case "Soybean meal":
-                change = originalQuantities[ingredient.name] * -0.045; // 4.5% decrease
-                ingredient.quantityKg += change;
-                totalWeightChange += change;
+                changePercent = -0.045; // 4.5% decrease
                 break;
             case "Soybean oil":
-                change = originalQuantities[ingredient.name] * -0.06; // 6% decrease
-                ingredient.quantityKg += change;
-                totalWeightChange += change;
+                changePercent = -0.06; // 6% decrease
                 break;
             case "Synthetic AA":
-                change = originalQuantities[ingredient.name] * -0.031; // 3.1% decrease
-                ingredient.quantityKg += change;
-                totalWeightChange += change;
+                changePercent = -0.031; // 3.1% decrease
+                break;
+            case "Other raw materials":
+                changePercent = 0.007; // 0.7% increase
                 break;
         }
+        
+        ingredient.quantityKg *= (1 + changePercent);
+        sumOfNonBalancingIngredients += ingredient.quantityKg;
     });
 
-    // Balance the total weight to 1000kg by adjusting "Other raw materials"
-    const otherMaterials = reformulatedIngredients.find((ing: {name: string}) => ing.name === "Other raw materials");
-    if (otherMaterials) {
-        otherMaterials.quantityKg -= totalWeightChange;
+    // Balance the total weight to 1000kg by adjusting "Corn"
+    const cornIngredient = reformulatedIngredients.find((ing: {name: string}) => ing.name === "Corn");
+    if (cornIngredient) {
+        cornIngredient.quantityKg = 1000 - sumOfNonBalancingIngredients;
     }
+
 
     // 3. Calculate reformulated cost per ton
     const reformulatedCostPerTon = calculateTotalCost(reformulatedIngredients);
