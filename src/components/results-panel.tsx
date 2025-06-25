@@ -113,7 +113,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                     value={parseFloat(results.withAdditive.improvedFcr.toFixed(2)).toString()}
                     isPositive={true}
                 />
-                 <MetricCard 
+                <MetricCard 
                     icon={BadgePercent}
                     title="Cost Reduction"
                     value={formatPercent(results.comparison.costReductionPercentage)}
@@ -146,7 +146,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                 </div>
                 <CardDescription>
                     AI-powered insights to help optimize your farming practices.
-                </Description>
+                </CardDescription>
             </Header>
             <CardContent>
                 {isCalculating && !suggestions ? (
