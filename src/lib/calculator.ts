@@ -88,7 +88,7 @@ const feedIngredients = [
  * changes to ingredient quantities when Jefo Pro Solution is used.
  * @returns {MatrixCalculationOutput} The calculated savings per ton of feed.
  */
-export function calculateMatrixSavings(): MatrixCalculationOutput {
+export function calculateMatrixSavings(data: CalculationInput): MatrixCalculationOutput {
     // Helper function to calculate the total cost of a given feed formulation.
     const calculateTotalCost = (ingredients: typeof feedIngredients) => {
         return ingredients.reduce((total, ingredient) => {
@@ -146,11 +146,18 @@ export function calculateMatrixSavings(): MatrixCalculationOutput {
     // 3. Calculate reformulated cost per ton
     const reformulatedCostPerTon = calculateTotalCost(reformulatedIngredients);
 
-    // 4. Calculate savings
+    // 4. Calculate savings per ton
     const savingsPerTon = baselineCostPerTon - reformulatedCostPerTon;
+
+    // 5. Calculate total feed consumed in the cycle to find savings per cycle
+    const survivingBroilers = data.numberOfBroilers * (1 - data.mortalityRate / 100);
+    const totalLiveWeight = survivingBroilers * data.broilerWeight;
+    const totalFeedConsumedTons = (totalLiveWeight * data.fcr) / 1000;
+    const savingsPerCycle = totalFeedConsumedTons * savingsPerTon;
 
     return {
         baselineCostPerTon: parseFloat(baselineCostPerTon.toFixed(2)),
         savingsPerTon: parseFloat(savingsPerTon.toFixed(2)),
+        savingsPerCycle: Math.round(savingsPerCycle),
     };
 }

@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BadgePercent, PiggyBank, Target, TrendingUp, Lightbulb, LineChart, DollarSign, Database, FlaskConical } from "lucide-react";
+import { BadgePercent, PiggyBank, Target, TrendingUp, Lightbulb, LineChart, DollarSign, Database, Scales } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CalculationOutput, MatrixCalculationOutput } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -216,17 +216,23 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
                         </BarChart>
                     </ChartContainer>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <MetricCard 
                         icon={Database}
                         title="Baseline Cost / Ton"
                         value={formatCurrency(matrixResults!.baselineCostPerTon)}
                     />
                     <MetricCard 
-                        icon={PiggyBank}
-                        title="Total Savings per Ton"
+                        icon={DollarSign}
+                        title="Savings per Ton"
                         value={formatCurrency(matrixResults!.savingsPerTon)}
                         isPositive={matrixResults!.savingsPerTon > 0}
+                    />
+                     <MetricCard 
+                        icon={PiggyBank}
+                        title="Savings per Cycle"
+                        value={formatCurrency(matrixResults!.savingsPerCycle, 0)}
+                        isPositive={matrixResults!.savingsPerCycle > 0}
                     />
                 </div>
             </CardContent>

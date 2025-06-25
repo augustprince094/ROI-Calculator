@@ -34,7 +34,7 @@ export default function Home() {
     setCalculationMode(mode);
 
     if (mode === 'matrix') {
-        const matrixCalcResults = calculateMatrixSavings();
+        const matrixCalcResults = calculateMatrixSavings(data);
         setMatrixResults(matrixCalcResults);
         // AI suggestions are not implemented for matrix view yet.
         setSuggestions("AI suggestions are available for the 'on-top' application analysis.");
