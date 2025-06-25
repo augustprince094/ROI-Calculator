@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { Bar, BarChart, XAxis, YAxis, Tooltip, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { additiveData, type AdditiveName } from "@/lib/additive-data";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 
 type ResultsPanelProps = {
@@ -217,6 +219,34 @@ function MatrixResultsView({ matrixResults, additiveType }: Pick<ResultsPanelPro
                         </BarChart>
                     </ChartContainer>
                 </div>
+
+                <Accordion type="single" collapsible className="w-full mb-6">
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger>View Reformulated Diet Composition</AccordionTrigger>
+                    <AccordionContent>
+                        <Table>
+                            <TableCaption>A 1-ton (1000 kg) reformulated feed composition.</TableCaption>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Ingredient</TableHead>
+                                    <TableHead className="text-right">Quantity (kg)</TableHead>
+                                    <TableHead className="text-right">Cost ($)</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {matrixResults!.reformulatedDiet.map((ing) => (
+                                    <TableRow key={ing.name}>
+                                        <TableCell className="font-medium">{ing.name}</TableCell>
+                                        <TableCell className="text-right">{ing.quantityKg.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">{formatCurrency(ing.cost, 2)}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <MetricCard 
                         icon={Database}

@@ -52,9 +52,16 @@ export interface CalculationOutput {
   };
 }
 
+export interface ReformulatedIngredient {
+  name: string;
+  quantityKg: number;
+  cost: number;
+}
+
 export interface MatrixCalculationOutput {
   baselineCostPerTon: number;
   savingsPerTon: number;
   savingsPerCycle: number;
   roi: number;
+  reformulatedDiet: ReformulatedIngredient[];
 }

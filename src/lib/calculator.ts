@@ -1,5 +1,5 @@
 
-import type { CalculationInput, CalculationOutput, MatrixCalculationOutput } from '@/lib/types';
+import type { CalculationInput, CalculationOutput, MatrixCalculationOutput, ReformulatedIngredient } from '@/lib/types';
 
 /**
  * Calculates the financial impact of using a feed additive, accounting for feed consumed by mortalities.
@@ -90,11 +90,11 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
  * NOTE: Corn quantity adjusted to make the total sum 1000kg. Other raw material price updated per user request.
  */
 const feedIngredients = [
-    { name: "Corn", quantityKg: 488.2, pricePerTon: 232 },
-    { name: "Soybean meal", quantityKg: 434.3, pricePerTon: 624 },
-    { name: "Soybean oil", quantityKg: 44.6, pricePerTon: 1600 },
-    { name: "Synthetic AA", quantityKg: 6.5, pricePerTon: 2854 },
-    { name: "Other raw materials", quantityKg: 26.4, pricePerTon: 10 }
+    { name: "Corn", quantityKg: 518.7, pricePerTon: 232 },
+    { name: "Soybean meal", quantityKg: 396.0, pricePerTon: 624 },
+    { name: "Soybean oil", quantityKg: 43.6, pricePerTon: 1600 },
+    { name: "Synthetic AA", quantityKg: 7.8, pricePerTon: 2854 },
+    { name: "Other raw materials", quantityKg: 33.9, pricePerTon: 10 }
 ];
 
 /**
@@ -178,10 +178,18 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
     // ROI is Net Savings / Investment. `savingsPerCycle` is already net. `totalAdditiveCost` is the investment.
     const roi = totalAdditiveCost > 0 ? (savingsPerCycle / totalAdditiveCost) * 100 : (savingsPerCycle > 0 ? Infinity : 0);
 
+    // Create the detailed reformulated diet for display
+    const reformulatedDietForDisplay: ReformulatedIngredient[] = reformulatedIngredients.map((ing: {name: string, quantityKg: number, pricePerTon: number}) => ({
+        name: ing.name,
+        quantityKg: parseFloat(ing.quantityKg.toFixed(2)),
+        cost: parseFloat(((ing.quantityKg * ing.pricePerTon) / 1000).toFixed(2)),
+    }));
+
     return {
         baselineCostPerTon: parseFloat(baselineCostPerTon.toFixed(2)),
         savingsPerTon: parseFloat(savingsPerTon.toFixed(2)),
         savingsPerCycle: Math.round(savingsPerCycle),
         roi,
+        reformulatedDiet: reformulatedDietForDisplay,
     };
 }
