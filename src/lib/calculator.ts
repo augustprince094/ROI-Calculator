@@ -151,7 +151,6 @@ export function calculateMatrixSavings(): MatrixCalculationOutput {
 
     return {
         baselineCostPerTon: parseFloat(baselineCostPerTon.toFixed(2)),
-        reformulatedCostPerTon: parseFloat(reformulatedCostPerTon.toFixed(2)),
         savingsPerTon: parseFloat(savingsPerTon.toFixed(2)),
     };
 }
