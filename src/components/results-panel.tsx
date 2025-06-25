@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -149,7 +148,7 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
             </CardHeader>
             <CardContent>
                 <div className="mb-6">
-                    <h4 className="text-lg font-semibold mb-2">Cost per kg Live Weight Comparison</h4>
+                    <h4 className="text-lg font-semibold mb-2">Cost per broiler live weight comparison</h4>
                      <ChartContainer config={chartConfig} className="h-[250px] w-full">
                         <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
                             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
@@ -268,5 +267,3 @@ function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
         </div>
     );
 }
-
-    
