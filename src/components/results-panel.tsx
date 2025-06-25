@@ -230,7 +230,7 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
                     />
                      <MetricCard 
                         icon={PiggyBank}
-                        title="Savings per Cycle"
+                        title="Savings per production cycle"
                         value={formatCurrency(matrixResults!.savingsPerCycle, 0)}
                         isPositive={matrixResults!.savingsPerCycle > 0}
                     />
