@@ -75,7 +75,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
           <CardDescription>
             Here is the financial breakdown based on your inputs.
           </CardDescription>
-        </CardHeader>
+        </Header>
         <CardContent>
           {isCalculating && !results ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -111,7 +111,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                     icon={Target}
                     title="Improved FCR"
                     value={parseFloat(results.withAdditive.improvedFcr.toFixed(2)).toString()}
-                    isPositive={true} // Lower FCR is better
+                    isPositive={true}
                 />
                  <MetricCard 
                     icon={BadgePercent}
