@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -153,11 +152,11 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
                      <ChartContainer config={chartConfig} className="h-[250px] w-full">
                         <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
                             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(Number(value), 3)} />
+                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(Number(value), 2)} />
                             <Tooltip
                                 cursor={{ fill: 'hsl(var(--muted))', radius: 4 }}
                                 content={<ChartTooltipContent 
-                                    formatter={(value) => formatCurrency(Number(value), 3)}
+                                    formatter={(value) => formatCurrency(Number(value), 2)}
                                     />}
                              />
                             <Bar dataKey="Cost/kg" radius={[4, 4, 0, 0]}>
@@ -270,3 +269,5 @@ function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
         </div>
     );
 }
+
+    
