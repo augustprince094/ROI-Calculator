@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -215,17 +216,11 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
                         </BarChart>
                     </ChartContainer>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <MetricCard 
                         icon={Database}
                         title="Baseline Cost / Ton"
                         value={formatCurrency(matrixResults!.baselineCostPerTon)}
-                    />
-                    <MetricCard 
-                        icon={FlaskConical}
-                        title="Reformulated Cost / Ton"
-                        value={formatCurrency(matrixResults!.reformulatedCostPerTon)}
-                        isPositive={matrixResults!.reformulatedCostPerTon < matrixResults!.baselineCostPerTon}
                     />
                     <MetricCard 
                         icon={PiggyBank}
