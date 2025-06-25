@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -143,7 +144,7 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
     return (
         <Card className="shadow-lg animate-in fade-in-50 duration-500">
             <CardHeader>
-                <CardTitle>Key Metrics (On-Top Application)</CardTitle>
+                <CardTitle>Cost per broiler live weight comparison</CardTitle>
                 <CardDescription>Financial breakdown comparing baseline to additive use.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -178,15 +179,17 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
     );
 }
 
-function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixResults'>) {
+function MatrixResultsView({ matrixResults, additiveType }: Pick<ResultsPanelProps, 'matrixResults' | 'additiveType'>) {
+    const additiveColor = (additiveType && additiveData[additiveType as AdditiveName]?.color) || "hsl(var(--primary))";
+
     const chartData = matrixResults ? [
-        { name: "Savings", value: matrixResults.savingsPerTon, fill: "hsl(var(--primary))" }
+        { name: "Savings", value: matrixResults.savingsPerTon, fill: additiveColor }
     ] : [];
 
     const chartConfig = {
       value: {
         label: "Savings",
-        color: "hsl(var(--primary))",
+        color: additiveColor,
       },
     } satisfies ChartConfig;
     
@@ -210,7 +213,7 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
                                     />}
                              />
                             <Bar dataKey="value" name="Savings per Ton" radius={[0, 4, 4, 0]} barSize={60}>
-                                <Cell fill="hsl(var(--primary))" />
+                                <Cell fill={additiveColor} />
                             </Bar>
                         </BarChart>
                     </ChartContainer>
