@@ -68,7 +68,7 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
               <div className="p-4 border rounded-lg space-y-4 bg-card">
                   <h3 className="font-semibold text-foreground">Your Farm's Data</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <InputField name="numberOfBroilers" label="Number of Broilers per Production Cycle" form={form} />
+                      <InputField name="numberOfBroilers" label="Number of birds per production cycle" form={form} />
                       <InputField name="broilerWeight" label="Broiler Weight (kg)" form={form} />
                       <InputField name="mortalityRate" label="Mortality Rate (%)" form={form} />
                       <InputField name="fcr" label="Baseline FCR" form={form} />
@@ -99,7 +99,7 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                                   <FormControl>
                                       <SelectTrigger>
                                           <SelectValue placeholder="Select an additive" />
-                                      </Trigger>
+                                      </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
                                       {Object.keys(additiveData).map((name) => (
