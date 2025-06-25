@@ -53,7 +53,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
     "Cost/kg": {
       label: "Cost/kg",
     },
-  }
+  };
 
   if (!showResults) {
     return (
@@ -146,7 +146,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                 </div>
                 <CardDescription>
                     AI-powered insights to help optimize your farming practices.
-                </CardDescription>
+                </Description>
             </Header>
             <CardContent>
                 {isCalculating && !suggestions ? (
@@ -170,7 +170,7 @@ type MetricCardProps = {
     title: string;
     value: string;
     isPositive: boolean;
-}
+};
 
 function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
     return (
@@ -190,5 +190,5 @@ function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
                 </p>
             </div>
         </div>
-    )
+    );
 }
