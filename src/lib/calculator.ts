@@ -1,3 +1,4 @@
+
 import type { CalculationInput, CalculationOutput, MatrixCalculationOutput } from '@/lib/types';
 
 /**
@@ -93,7 +94,7 @@ const feedIngredients = [
     { name: "Soybean meal", quantityKg: 434.3, pricePerTon: 624 },
     { name: "Soybean oil", quantityKg: 44.6, pricePerTon: 1600 },
     { name: "Synthetic AA", quantityKg: 6.5, pricePerTon: 2854 },
-    { name: "Other raw materials", quantityKg: 26.4, pricePerTon: 571 }
+    { name: "Other raw materials", quantityKg: 26.4, pricePerTon: 10 }
 ];
 
 /**
