@@ -199,7 +199,7 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
             </CardHeader>
             <CardContent>
                 <div className="mb-6">
-                    <h4 className="text-lg font-semibold mb-2">Savings per Ton of Complete Feed</h4>
+                    <h4 className="text-lg font-semibold mb-2">Savings per ton of feed</h4>
                      <ChartContainer config={chartConfig} className="w-full h-[250px]">
                         <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 20, left: 10, bottom: 5 }}>
                             <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(Number(value))}/>
@@ -224,7 +224,7 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
                     />
                     <MetricCard 
                         icon={DollarSign}
-                        title="Savings per Ton"
+                        title="Savings per ton of feed"
                         value={formatCurrency(matrixResults!.savingsPerTon)}
                         isPositive={matrixResults!.savingsPerTon > 0}
                     />
@@ -268,3 +268,5 @@ function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
         </div>
     );
 }
+
+    
