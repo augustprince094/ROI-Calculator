@@ -16,10 +16,6 @@ export const formSchema = z.object({
   additiveInclusionRate: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
   additiveCost: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
   
-  // Matrix specific prices
-  cornPrice: z.coerce.number({ invalid_type_error: "Required" }).positive("Must be positive").optional(),
-  soybeanPrice: z.coerce.number({ invalid_type_error: "Required" }).positive("Must be positive").optional(),
-
   // Conditional field for Jefo Pro Solution & Belfeed
   applicationType: z.enum(['matrix', 'on-top']).optional(),
 }).superRefine((data, ctx) => {
@@ -32,23 +28,6 @@ export const formSchema = z.object({
         message: "Application type is required for this additive",
         path: ['applicationType'],
       });
-    }
-    
-    if (data.applicationType === 'matrix') {
-      if (!data.cornPrice) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Required for matrix calculation",
-          path: ['cornPrice'],
-        });
-      }
-      if (!data.soybeanPrice) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Required for matrix calculation",
-          path: ['soybeanPrice'],
-        });
-      }
     }
   }
 });

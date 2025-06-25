@@ -45,8 +45,6 @@ const defaultValues: Partial<CalculationInput> = {
   additiveInclusionRate: 125,
   additiveCost: 12,
   applicationType: 'on-top',
-  cornPrice: 250,
-  soybeanPrice: 450,
 };
 
 export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelProps) {
@@ -161,19 +159,12 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
 
                     <div className={cn(
                         "space-y-4 pt-2 animate-in fade-in-50 duration-300",
-                        selectedApplicationType !== 'matrix' && "hidden"
+                        selectedApplicationType === 'matrix' && "hidden"
                     )}>
-                        <h4 className="font-medium text-foreground">Matrix Prices</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField name="cornPrice" label="Corn Price ($/ton)" form={form} />
-                            <InputField name="soybeanPrice" label="Soybean Price ($/ton)" form={form} />
+                          <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
+                          <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} />
                         </div>
-                    </div>
-
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
-                      <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} />
                     </div>
               </div>
             

@@ -34,10 +34,7 @@ export default function Home() {
     setCalculationMode(mode);
 
     if (mode === 'matrix') {
-        const matrixCalcResults = calculateMatrixSavings({
-            cornPrice: data.cornPrice!,
-            soybeanPrice: data.soybeanPrice!
-        });
+        const matrixCalcResults = calculateMatrixSavings();
         setMatrixResults(matrixCalcResults);
         // AI suggestions are not implemented for matrix view yet.
         setSuggestions("AI suggestions are available for the 'on-top' application analysis.");

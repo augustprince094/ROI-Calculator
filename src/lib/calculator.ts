@@ -71,38 +71,85 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
   };
 }
 
+/**
+ * A database of feed ingredients for a standard 1-ton (1000kg) broiler feed formulation.
+ */
+const feedIngredients = [
+    { name: "Corn", quantityKg: 579.2, pricePerTon: 232 },
+    { name: "Soybean meal", quantityKg: 396, pricePerTon: 624 },
+    { name: "Soybean oil", quantityKg: 43.6, pricePerTon: 1600 },
+    { name: "Synthetic AA", quantityKg: 6.5, pricePerTon: 3250 },
+    { name: "Other raw materials", quantityKg: 26.4, pricePerTon: 100 }
+];
 
 /**
- * Calculates feed cost savings based on a nutrient matrix application.
- * This function assumes a 5% reduction in soybean meal, which is replaced by an equal weight of corn.
- * A typical inclusion of 250 kg of soybean meal per ton of feed is used as the basis for this calculation.
- * @param {object} params - The parameters for the calculation.
- * @param {number} params.cornPrice - The price of corn in $/ton.
- * @param {number} params.soybeanPrice - The price of soybean in $/ton.
+ * Calculates feed cost savings based on a nutrient matrix reformulation.
+ * This function uses a predefined feed formulation and applies specific percentage
+ * changes to ingredient quantities when Jefo Pro Solution is used.
  * @returns {MatrixCalculationOutput} The calculated savings per ton of feed.
  */
-export function calculateMatrixSavings({ cornPrice, soybeanPrice }: { cornPrice: number; soybeanPrice: number; }): MatrixCalculationOutput {
-  // Assume a standard 250kg of soybean meal per ton of complete feed.
-  const soybeanMealPerTon = 250; // in kg
-  
-  // The matrix allows for a 5% reduction in soybean meal.
-  const soybeanReductionKg = soybeanMealPerTon * 0.05; // 5% of 250kg = 12.5kg
+export function calculateMatrixSavings(): MatrixCalculationOutput {
+    // Helper function to calculate the total cost of a given feed formulation.
+    const calculateTotalCost = (ingredients: typeof feedIngredients) => {
+        return ingredients.reduce((total, ingredient) => {
+            const costOfIngredient = (ingredient.quantityKg * ingredient.pricePerTon) / 1000;
+            return total + costOfIngredient;
+        }, 0);
+    };
 
-  // This reduced amount of soybean is replaced by an equal weight of corn.
-  const cornIncreaseKg = soybeanReductionKg;
-  
-  // Convert prices from $/ton to $/kg
-  const soybeanPricePerKg = soybeanPrice / 1000;
-  const cornPricePerKg = cornPrice / 1000;
-  
-  // Calculate the cost of the removed soybean and the added corn.
-  const costOfRemovedSoybean = soybeanReductionKg * soybeanPricePerKg;
-  const costOfAddedCorn = cornIncreaseKg * cornPricePerKg;
+    // 1. Calculate baseline cost per ton
+    const baselineCostPerTon = calculateTotalCost(feedIngredients);
 
-  // The savings per ton is the difference in cost.
-  const savingsPerTon = costOfRemovedSoybean - costOfAddedCorn;
+    // 2. Define the reformulated diet
+    const reformulatedIngredients = JSON.parse(JSON.stringify(feedIngredients));
+    
+    const originalQuantities: { [key: string]: number } = {};
+    feedIngredients.forEach(ing => {
+        originalQuantities[ing.name] = ing.quantityKg;
+    });
 
-  return {
-    savingsPerTon: parseFloat(savingsPerTon.toFixed(2)),
-  };
+    let totalWeightChange = 0;
+
+    // Apply percentage changes for each specified ingredient
+    reformulatedIngredients.forEach((ingredient: { name: string; quantityKg: number }) => {
+        let change = 0;
+        switch (ingredient.name) {
+            case "Corn":
+                change = originalQuantities[ingredient.name] * 0.031; // 3.1% increase
+                ingredient.quantityKg += change;
+                totalWeightChange += change;
+                break;
+            case "Soybean meal":
+                change = originalQuantities[ingredient.name] * -0.045; // 4.5% decrease
+                ingredient.quantityKg += change;
+                totalWeightChange += change;
+                break;
+            case "Soybean oil":
+                change = originalQuantities[ingredient.name] * -0.06; // 6% decrease
+                ingredient.quantityKg += change;
+                totalWeightChange += change;
+                break;
+            case "Synthetic AA":
+                change = originalQuantities[ingredient.name] * -0.031; // 3.1% decrease
+                ingredient.quantityKg += change;
+                totalWeightChange += change;
+                break;
+        }
+    });
+
+    // Balance the total weight to 1000kg by adjusting "Other raw materials"
+    const otherMaterials = reformulatedIngredients.find((ing: {name: string}) => ing.name === "Other raw materials");
+    if (otherMaterials) {
+        otherMaterials.quantityKg -= totalWeightChange;
+    }
+
+    // 3. Calculate reformulated cost per ton
+    const reformulatedCostPerTon = calculateTotalCost(reformulatedIngredients);
+
+    // 4. Calculate savings
+    const savingsPerTon = baselineCostPerTon - reformulatedCostPerTon;
+
+    return {
+        savingsPerTon: parseFloat(savingsPerTon.toFixed(2)),
+    };
 }
