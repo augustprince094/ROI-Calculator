@@ -1,62 +1,67 @@
 import type { CalculationInput, CalculationOutput, MatrixCalculationOutput } from '@/lib/types';
 
+/**
+ * Calculates the financial impact of using a feed additive, accounting for feed consumed by mortalities.
+ * It assumes birds that die consume, on average, half the feed of a bird that survives to market.
+ */
 export function calculateRoi(data: CalculationInput, fcrImprovement: number): CalculationOutput {
-  // The user inputs feed price as "$/kg live weight".
-  // To get the price of feed per kg, we divide this by the FCR.
-  // This assumes the feed cost per live weight is based on the baseline FCR.
   const pricePerKgFeed = data.fcr > 0 ? data.feedCostPerLw / data.fcr : 0;
-  
-  // Calculate the new, improved Feed Conversion Ratio (FCR)
-  const improvedFcr = data.fcr - (data.fcr * fcrImprovement / 100);
+  const improvedFcr = data.fcr * (1 - fcrImprovement / 100);
 
-  // --- Baseline Calculation (Without Additive Effect on FCR) ---
-  // This represents the scenario without using any Jefo solution.
-  const survivingBroilersBaseline = data.numberOfBroilers * (1 - data.mortalityRate / 100);
-  const totalLiveWeightBaseline = survivingBroilersBaseline * data.broilerWeight;
-  const totalFeedConsumedBaseline = totalLiveWeightBaseline * data.fcr;
-  const totalFeedCostBaseline = totalFeedConsumedBaseline * pricePerKgFeed;
-  const costPerKgLiveWeightBaseline = totalLiveWeightBaseline > 0 ? totalFeedCostBaseline / totalLiveWeightBaseline : 0;
+  // --- Helper function to calculate costs for a given scenario ---
+  const calculateScenarioCost = (fcr: number, mortalityRate: number) => {
+    const survivingBroilers = data.numberOfBroilers * (1 - mortalityRate / 100);
+    const deadBroilers = data.numberOfBroilers - survivingBroilers;
+    const totalLiveWeight = survivingBroilers * data.broilerWeight;
+
+    // Feed consumed by birds that survive to market
+    const feedForSurvivors = survivingBroilers * data.broilerWeight * fcr;
+
+    // Feed consumed by birds that die (assuming they consume half on average)
+    const feedForMortalities = deadBroilers * (data.broilerWeight * fcr / 2);
+
+    const totalFeedConsumed = feedForSurvivors + feedForMortalities;
+    const totalFeedCost = totalFeedConsumed * pricePerKgFeed;
+
+    return { totalLiveWeight, totalFeedConsumed, totalFeedCost };
+  };
+
+  // --- Baseline Calculation (Without Additive) ---
+  const { 
+    totalLiveWeight: totalLiveWeightBaseline, 
+    totalFeedCost: totalFeedCostBaseline,
+  } = calculateScenarioCost(data.fcr, data.mortalityRate);
+
+  const costPerKgLiveWeightBaseline = totalLiveWeightBaseline > 0 
+    ? totalFeedCostBaseline / totalLiveWeightBaseline 
+    : 0;
 
   // --- Calculation With Additive ---
-  // Adjust mortality rate based on the selected additive. The baseline calculation remains unaffected.
   let adjustedMortalityRate = data.mortalityRate;
   if (data.additiveType === 'Jefo Pro Solution') {
-    adjustedMortalityRate = Math.max(0, data.mortalityRate - 1.5); // Ensure rate doesn't go below 0
+    adjustedMortalityRate = Math.max(0, data.mortalityRate - 1.5);
   } else if (data.additiveType === 'Jefo P(OA+EO)') {
-    adjustedMortalityRate = Math.max(0, data.mortalityRate - 2); // Ensure rate doesn't go below 0
+    adjustedMortalityRate = Math.max(0, data.mortalityRate - 2);
   }
 
-  // This represents the scenario using the selected Jefo solution.
-  const survivingBroilersWithAdditive = data.numberOfBroilers * (1 - adjustedMortalityRate / 100);
-  const totalLiveWeightWithAdditive = survivingBroilersWithAdditive * data.broilerWeight;
-  
-  // Total feed consumed is lower due to the improved FCR.
-  const totalFeedConsumedWithAdditive = totalLiveWeightWithAdditive * improvedFcr;
-  const totalFeedConsumedTonsWithAdditive = totalFeedConsumedWithAdditive / 1000;
-  
-  // Calculate how much additive is needed based on the inclusion rate (g/ton).
-  const totalAdditiveConsumed = (totalFeedConsumedTonsWithAdditive * data.additiveInclusionRate) / 1000;
+  const {
+    totalLiveWeight: totalLiveWeightWithAdditive,
+    totalFeedConsumed: totalFeedConsumedWithAdditive,
+    totalFeedCost: totalFeedCostWithAdditive,
+  } = calculateScenarioCost(improvedFcr, adjustedMortalityRate);
 
-  // Calculate the total costs for the 'with additive' scenario.
-  const totalFeedCostWithAdditive = totalFeedConsumedWithAdditive * pricePerKgFeed;
+  const totalFeedConsumedTonsWithAdditive = totalFeedConsumedWithAdditive / 1000;
+  const totalAdditiveConsumed = (totalFeedConsumedTonsWithAdditive * data.additiveInclusionRate) / 1000;
   const totalAdditiveCost = totalAdditiveConsumed * data.additiveCost;
   const totalCostWithAdditive = totalFeedCostWithAdditive + totalAdditiveCost;
 
-  const costPerKgLiveWeightWithAdditive = totalLiveWeightWithAdditive > 0 ? totalCostWithAdditive / totalLiveWeightWithAdditive : 0;
+  const costPerKgLiveWeightWithAdditive = totalLiveWeightWithAdditive > 0 
+    ? totalCostWithAdditive / totalLiveWeightWithAdditive 
+    : 0;
 
   // --- Savings & ROI Calculation ---
-  // The ROI formula is: (Total Cost Savings / Total Additive Cost) * 100
-
-  // 1. Calculate Total Cost Savings
-  // This is the difference between the baseline cost and the cost with the additive.
   const totalCostSavings = totalFeedCostBaseline - totalCostWithAdditive;
-  
-  // 2. Calculate ROI
-  // If the additive has a cost, ROI is savings divided by cost.
-  // If the additive is free (cost=0) and there are savings, ROI is infinite.
   const roi = totalAdditiveCost > 0 ? (totalCostSavings / totalAdditiveCost) * 100 : (totalCostSavings > 0 ? Infinity : 0);
-  
-  // Calculate the percentage reduction in cost per kg of live weight.
   const costReductionPercentage = costPerKgLiveWeightBaseline > 0
     ? ((costPerKgLiveWeightBaseline - costPerKgLiveWeightWithAdditive) / costPerKgLiveWeightBaseline) * 100
     : 0;
@@ -128,7 +133,7 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
                 totalWeightChange += change;
                 break;
             case "Soybean meal":
-                change = originalQuantologies[ingredient.name] * -0.045; // 4.5% decrease
+                change = originalQuantities[ingredient.name] * -0.045; // 4.5% decrease
                 ingredient.quantityKg += change;
                 totalWeightChange += change;
                 break;
@@ -158,17 +163,18 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
     const savingsPerTon = baselineCostPerTon - reformulatedCostPerTon;
 
     // Adjust mortality rate for certain additives before calculating cycle savings.
-    // Jefo P(OA+EO) does not have a matrix application option.
-    // Belfeed has a matrix option, but no mortality reduction was specified.
     let adjustedMortalityRate = data.mortalityRate;
     if (data.additiveType === 'Jefo Pro Solution') {
         adjustedMortalityRate = Math.max(0, data.mortalityRate - 1.5); // Ensure it doesn't go below 0
     }
 
-    // 5. Calculate total feed consumed in the cycle to find savings per cycle
+    // 5. Calculate total feed consumed in the cycle to find savings per cycle, accounting for mortality wastage.
     const survivingBroilers = data.numberOfBroilers * (1 - adjustedMortalityRate / 100);
-    const totalLiveWeight = survivingBroilers * data.broilerWeight;
-    const totalFeedConsumedTons = (totalLiveWeight * data.fcr) / 1000;
+    const deadBroilers = data.numberOfBroilers - survivingBroilers;
+    const feedForSurvivors = survivingBroilers * data.broilerWeight * data.fcr;
+    const feedForMortalities = deadBroilers * (data.broilerWeight * data.fcr / 2);
+    const totalFeedConsumedTons = (feedForSurvivors + feedForMortalities) / 1000;
+
     const savingsPerCycle = totalFeedConsumedTons * savingsPerTon;
 
     return {
