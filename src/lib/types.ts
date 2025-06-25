@@ -15,17 +15,42 @@ export const formSchema = z.object({
   additiveType: z.enum(additiveNames, { required_error: "Required" }),
   additiveInclusionRate: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
   additiveCost: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
+  
+  // Matrix specific prices
+  cornPrice: z.coerce.number({ invalid_type_error: "Required" }).positive("Must be positive").optional(),
+  soybeanPrice: z.coerce.number({ invalid_type_error: "Required" }).positive("Must be positive").optional(),
 
   // Conditional field for Jefo Pro Solution & Belfeed
   applicationType: z.enum(['matrix', 'on-top']).optional(),
-}).refine(data => {
-  if (data.additiveType === 'Jefo Pro Solution' || data.additiveType === 'Belfeed') {
-    return data.applicationType !== undefined;
+}).superRefine((data, ctx) => {
+  const isMatrixApplicable = data.additiveType === 'Jefo Pro Solution' || data.additiveType === 'Belfeed';
+
+  if (isMatrixApplicable) {
+    if (!data.applicationType) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Application type is required for this additive",
+        path: ['applicationType'],
+      });
+    }
+    
+    if (data.applicationType === 'matrix') {
+      if (!data.cornPrice) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Required for matrix calculation",
+          path: ['cornPrice'],
+        });
+      }
+      if (!data.soybeanPrice) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Required for matrix calculation",
+          path: ['soybeanPrice'],
+        });
+      }
+    }
   }
-  return true;
-}, {
-  message: "Application type is required for this additive",
-  path: ['applicationType'],
 });
 
 
@@ -46,4 +71,8 @@ export interface CalculationOutput {
     roi: number;
     costReductionPercentage: number;
   };
+}
+
+export interface MatrixCalculationOutput {
+  savingsPerTon: number;
 }

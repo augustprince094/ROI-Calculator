@@ -28,6 +28,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formSchema } from "@/lib/types";
 import type { CalculationInput } from "@/lib/types";
 import { additiveData, type AdditiveName } from "@/lib/additive-data";
+import { cn } from "@/lib/utils";
 
 type CalculatorPanelProps = {
   onCalculate: (data: CalculationInput, fcrImprovement: number) => void;
@@ -44,15 +45,19 @@ const defaultValues: Partial<CalculationInput> = {
   additiveInclusionRate: 125,
   additiveCost: 12,
   applicationType: 'on-top',
+  cornPrice: 250,
+  soybeanPrice: 450,
 };
 
 export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelProps) {
   const form = useForm<CalculationInput>({
     resolver: zodResolver(formSchema),
     defaultValues,
+    mode: "onChange",
   });
 
   const selectedAdditive = form.watch("additiveType");
+  const selectedApplicationType = form.watch("applicationType");
 
   const onSubmit = (data: CalculationInput) => {
     const fcrImprovement = additiveData[data.additiveType as AdditiveName].fcrImprovement;
@@ -99,10 +104,10 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                                         form.setValue("additiveCost", data.cost);
                                     }
                                     if (value === 'Jefo Pro Solution' || value === 'Belfeed') {
-                                      form.setValue('applicationType', 'on-top');
+                                      form.setValue('applicationType', form.getValues('applicationType') || 'on-top');
                                     } else {
-                                      form.clearErrors('applicationType');
                                       form.setValue('applicationType', undefined);
+                                      form.clearErrors('applicationType');
                                     }
                                 }}
                                 defaultValue={field.value}
@@ -124,37 +129,47 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                     />
                     
                     {(selectedAdditive === "Jefo Pro Solution" || selectedAdditive === "Belfeed") && (
-                        <FormField
-                            control={form.control}
-                            name="applicationType"
-                            render={({ field }) => (
-                            <FormItem className="space-y-2 pt-2">
-                                <FormLabel>Application Type</FormLabel>
-                                <FormControl>
-                                <RadioGroup
-                                    onValueChange={field.onChange}
-                                    value={field.value}
-                                    className="flex items-center space-x-4"
-                                >
-                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                        <div className="animate-in fade-in-50 duration-300">
+                            <FormField
+                                control={form.control}
+                                name="applicationType"
+                                render={({ field }) => (
+                                <FormItem className="space-y-2 pt-2">
+                                    <FormLabel>Application Type</FormLabel>
                                     <FormControl>
-                                        <RadioGroupItem value="matrix" />
+                                    <RadioGroup
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                        className="flex items-center space-x-4"
+                                    >
+                                        <FormItem className="flex items-center space-x-2 space-y-0">
+                                            <FormControl><RadioGroupItem value="on-top" /></FormControl>
+                                            <FormLabel className="font-normal cursor-pointer">On-top</FormLabel>
+                                        </FormItem>
+                                        <FormItem className="flex items-center space-x-2 space-y-0">
+                                            <FormControl><RadioGroupItem value="matrix" /></FormControl>
+                                            <FormLabel className="font-normal cursor-pointer">Matrix</FormLabel>
+                                        </FormItem>
+                                    </RadioGroup>
                                     </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer">Matrix</FormLabel>
-                                    </FormItem>
-                                    <FormItem className="flex items-center space-x-2 space-y-0">
-                                    <FormControl>
-                                        <RadioGroupItem value="on-top" />
-                                    </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer">On-top</FormLabel>
-                                    </FormItem>
-                                </RadioGroup>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                        </div>
                     )}
+
+                    <div className={cn(
+                        "space-y-4 pt-2 animate-in fade-in-50 duration-300",
+                        selectedApplicationType !== 'matrix' && "hidden"
+                    )}>
+                        <h4 className="font-medium text-foreground">Matrix Prices</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <InputField name="cornPrice" label="Corn Price ($/ton)" form={form} />
+                            <InputField name="soybeanPrice" label="Soybean Price ($/ton)" form={form} />
+                        </div>
+                    </div>
+
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
@@ -166,7 +181,7 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
               {isCalculating ? (
                 <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Please wait...</>
               ) : (
-                <><Calculator className="mr-2 h-5 w-5" /> Calculate ROI</>
+                <><Calculator className="mr-2 h-5 w-5" /> Calculate</>
               )}
             </Button>
           </form>
@@ -188,15 +203,25 @@ function InputField({name, label, form}: InputFieldProps) {
         <FormField
             control={form.control}
             name={name}
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>{label}</FormLabel>
-                <FormControl>
-                <Input type="number" step="any" placeholder={`Enter ${label.toLowerCase()}`} {...field} value={field.value ?? ""} />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
+            render={({ field }) => {
+              const value = field.value === null || field.value === undefined ? "" : field.value;
+              return (
+                <FormItem>
+                    <FormLabel>{label}</FormLabel>
+                    <FormControl>
+                    <Input 
+                      type="number" 
+                      step="any" 
+                      placeholder={`Enter ${label.toLowerCase()}`} 
+                      {...field} 
+                      value={value}
+                      onChange={e => field.onChange(e.target.value === '' ? undefined : e.target.valueAsNumber)}
+                    />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+              )
+            }}
         />
     )
 }

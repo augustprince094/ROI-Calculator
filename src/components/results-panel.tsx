@@ -1,59 +1,36 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BadgePercent, PiggyBank, Target, TrendingUp, Lightbulb, LineChart } from "lucide-react";
+import { BadgePercent, PiggyBank, Target, TrendingUp, Lightbulb, LineChart, DollarSign } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { CalculationOutput } from "@/lib/types";
+import type { CalculationOutput, MatrixCalculationOutput } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell, Legend } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { additiveData, type AdditiveName } from "@/lib/additive-data";
 
 
 type ResultsPanelProps = {
   results: CalculationOutput | null;
+  matrixResults: MatrixCalculationOutput | null;
+  calculationMode: 'roi' | 'matrix';
   suggestions: string | null;
   isCalculating: boolean;
   showResults: boolean;
   additiveType: string | null;
 };
 
-export function ResultsPanel({ results, suggestions, isCalculating, showResults, additiveType }: ResultsPanelProps) {
-  
-  const formatCurrency = (value: number) => {
+const formatCurrency = (value: number, digits: number = 2) => {
     return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
     }).format(value);
-  };
-  
-  const formatPercent = (value: number) => {
-    if (value === Infinity) return "∞ %";
-    return `${value.toFixed(1)} %`;
-  };
+};
 
-  const formatRatio = (percentage: number) => {
-    if (percentage === Infinity) {
-      return "∞ : 1";
-    }
-    const ratio = percentage / 100;
-    return `${ratio.toFixed(1)} : 1`;
-  };
-
-  const baselineColor = "#AEAEAE";
-  const additiveColor = (additiveType && additiveData[additiveType as AdditiveName]?.color) || "hsl(var(--primary))";
-
-  const chartData = results ? [
-    { name: 'Baseline', 'Cost/kg': results.baseline.costPerKgLiveWeight.toFixed(3), fill: baselineColor },
-    { name: additiveType || 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight.toFixed(3), fill: additiveColor },
-  ] : [];
-
-  const chartConfig = {
-    "Cost/kg": {
-      label: "Cost/kg",
-    },
-  };
+export function ResultsPanel(props: ResultsPanelProps) {
+  const { showResults, isCalculating, calculationMode, results, matrixResults } = props;
 
   if (!showResults) {
     return (
@@ -67,77 +44,46 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
     );
   }
 
+  if (isCalculating) {
+    return (
+        <div className="space-y-8">
+            <Card className="shadow-lg">
+                <CardHeader>
+                    <Skeleton className="h-8 w-3/5" />
+                    <Skeleton className="h-4 w-4/5" />
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <Skeleton className="h-28" />
+                        <Skeleton className="h-28" />
+                        <Skeleton className="h-28" />
+                        <Skeleton className="h-28" />
+                    </div>
+                </CardContent>
+            </Card>
+            <Card className="shadow-lg">
+                <CardHeader>
+                    <Skeleton className="h-6 w-1/3 mb-2" />
+                    <Skeleton className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-4/5" />
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
-      <Card className="shadow-lg animate-in fade-in-50 duration-500">
-        <CardHeader>
-          <CardTitle>Key Metrics</CardTitle>
-          <CardDescription>
-            Here is the financial breakdown based on your inputs.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isCalculating && !results ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <Skeleton className="h-28" />
-                <Skeleton className="h-28" />
-                <Skeleton className="h-28" />
-                <Skeleton className="h-28" />
-            </div>
-          ) : results ? (
-            <>
-            <div className="mb-6">
-                <h4 className="text-lg font-semibold mb-2">Cost per kg Live Weight Comparison</h4>
-                <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                    <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
-                        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
-                        <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent 
-                                formatter={(value) => formatCurrency(Number(value))}
-                                />}
-                         />
-                        <Bar dataKey="Cost/kg" radius={[4, 4, 0, 0]}>
-                            {chartData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.fill} />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ChartContainer>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <MetricCard 
-                    icon={Target}
-                    title="Improved FCR"
-                    value={parseFloat(results.withAdditive.improvedFcr.toFixed(2)).toString()}
-                    isPositive={true}
-                />
-                <MetricCard 
-                    icon={BadgePercent}
-                    title="Cost Reduction"
-                    value={formatPercent(results.comparison.costReductionPercentage)}
-                    isPositive={results.comparison.costReductionPercentage > 0}
-                />
-                <MetricCard 
-                    icon={PiggyBank}
-                    title="Total Cost Savings"
-                    value={formatCurrency(results.comparison.totalCostSavings)}
-                    isPositive={results.comparison.totalCostSavings > 0}
-                />
-                <MetricCard 
-                    icon={TrendingUp}
-                    title="Return on Investment (ROI)"
-                    value={formatRatio(results.comparison.roi)}
-                    isPositive={results.comparison.roi > 0}
-                />
-            </div>
-            </>
-          ) : null}
-        </CardContent>
-      </Card>
+      {calculationMode === 'roi' && results && <RoiResultsView {...props} />}
+      {calculationMode === 'matrix' && matrixResults && <MatrixResultsView {...props} />}
 
-      {(isCalculating || suggestions) && (
+      {(isCalculating || props.suggestions) && (
         <Card className="shadow-lg animate-in fade-in-50 duration-500 delay-150">
             <CardHeader>
                 <div className="flex items-center gap-2">
@@ -149,20 +95,124 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                {isCalculating && !suggestions ? (
+                {isCalculating && !props.suggestions ? (
                     <div className="space-y-2">
                         <Skeleton className="h-4 w-full" />
                         <Skeleton className="h-4 w-full" />
                         <Skeleton className="h-4 w-4/5" />
                     </div>
-                ) : suggestions ? (
-                    <p className="text-sm text-foreground whitespace-pre-wrap">{suggestions}</p>
+                ) : props.suggestions ? (
+                    <p className="text-sm text-foreground whitespace-pre-wrap">{props.suggestions}</p>
                 ) : null}
             </CardContent>
         </Card>
       )}
     </div>
   );
+}
+
+
+function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'results' | 'additiveType'>) {
+    const formatPercent = (value: number) => {
+        if (value === Infinity) return "∞ %";
+        return `${value.toFixed(1)} %`;
+    };
+    
+    const formatRatio = (percentage: number) => {
+        if (percentage === Infinity) {
+            return "∞ : 1";
+        }
+        const ratio = percentage / 100;
+        return `${ratio.toFixed(1)} : 1`;
+    };
+
+    const baselineColor = "#AEAEAE";
+    const additiveColor = (additiveType && additiveData[additiveType as AdditiveName]?.color) || "hsl(var(--primary))";
+
+    const chartData = results ? [
+        { name: 'Baseline', 'Cost/kg': results.baseline.costPerKgLiveWeight, fill: baselineColor },
+        { name: additiveType || 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight, fill: additiveColor },
+    ] : [];
+
+    return (
+        <Card className="shadow-lg animate-in fade-in-50 duration-500">
+            <CardHeader>
+                <CardTitle>Key Metrics (On-Top Application)</CardTitle>
+                <CardDescription>Financial breakdown comparing baseline to additive use.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="mb-6">
+                    <h4 className="text-lg font-semibold mb-2">Cost per kg Live Weight Comparison</h4>
+                     <ResponsiveContainer width="100%" height={250}>
+                        <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                            <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(Number(value), 3)} />
+                            <Tooltip
+                                cursor={{ fill: 'hsl(var(--muted))', radius: 4 }}
+                                content={<ChartTooltipContent 
+                                    formatter={(value) => formatCurrency(Number(value), 3)}
+                                    />}
+                             />
+                            <Bar dataKey="Cost/kg" radius={[4, 4, 0, 0]}>
+                                {chartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <MetricCard icon={Target} title="Improved FCR" value={parseFloat(results!.withAdditive.improvedFcr.toFixed(2)).toString()} isPositive={true} />
+                    <MetricCard icon={BadgePercent} title="Cost Reduction" value={formatPercent(results!.comparison.costReductionPercentage)} isPositive={results!.comparison.costReductionPercentage > 0} />
+                    <MetricCard icon={PiggyBank} title="Total Cost Savings" value={formatCurrency(results!.comparison.totalCostSavings, 0)} isPositive={results!.comparison.totalCostSavings > 0} />
+                    <MetricCard icon={TrendingUp} title="Return on Investment (ROI)" value={formatRatio(results!.comparison.roi)} isPositive={results!.comparison.roi > 0} />
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixResults'>) {
+    const chartData = matrixResults ? [
+        { name: "Savings", value: matrixResults.savingsPerTon, fill: "hsl(var(--primary))" }
+    ] : [];
+    
+    return (
+        <Card className="shadow-lg animate-in fade-in-50 duration-500">
+            <CardHeader>
+                <CardTitle>Feed Cost Savings (Matrix Application)</CardTitle>
+                <CardDescription>Estimated savings from reformulating feed with the selected additive.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="mb-6">
+                    <h4 className="text-lg font-semibold mb-2">Savings per Ton of Complete Feed</h4>
+                     <ResponsiveContainer width="100%" height={250}>
+                        <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 20, left: 10, bottom: 5 }}>
+                            <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(Number(value))}/>
+                            <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                            <Tooltip
+                                cursor={{ fill: 'hsl(var(--muted))', radius: 4 }}
+                                content={<ChartTooltipContent 
+                                    formatter={(value) => formatCurrency(Number(value), 2)}
+                                    />}
+                             />
+                            <Bar dataKey="value" name="Savings per Ton" radius={[0, 4, 4, 0]} barSize={60}>
+                                <Cell fill="hsl(var(--primary))" />
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                    <MetricCard 
+                        icon={DollarSign}
+                        title="Total Savings per Ton"
+                        value={formatCurrency(matrixResults!.savingsPerTon)}
+                        isPositive={matrixResults!.savingsPerTon > 0}
+                    />
+                </div>
+            </CardContent>
+        </Card>
+    );
 }
 
 type MetricCardProps = {

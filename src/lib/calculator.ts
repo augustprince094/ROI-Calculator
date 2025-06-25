@@ -1,4 +1,4 @@
-import type { CalculationInput, CalculationOutput } from '@/lib/types';
+import type { CalculationInput, CalculationOutput, MatrixCalculationOutput } from '@/lib/types';
 
 export function calculateRoi(data: CalculationInput, fcrImprovement: number): CalculationOutput {
   // The user inputs feed price as "$/kg live weight".
@@ -61,12 +61,48 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
     withAdditive: {
       costPerKgLiveWeight: costPerKgLiveWeightWithAdditive,
       totalCost: totalCostWithAdditive,
- improvedFcr: parseFloat(improvedFcr.toFixed(2)),
+      improvedFcr: parseFloat(improvedFcr.toFixed(2)),
     },
     comparison: {
- totalCostSavings: Math.round(totalCostSavings),
+      totalCostSavings: Math.round(totalCostSavings),
       roi,
       costReductionPercentage,
     }
+  };
+}
+
+
+/**
+ * Calculates feed cost savings based on a nutrient matrix application.
+ * This function assumes a 5% reduction in soybean meal, which is replaced by an equal weight of corn.
+ * A typical inclusion of 250 kg of soybean meal per ton of feed is used as the basis for this calculation.
+ * @param {object} params - The parameters for the calculation.
+ * @param {number} params.cornPrice - The price of corn in $/ton.
+ * @param {number} params.soybeanPrice - The price of soybean in $/ton.
+ * @returns {MatrixCalculationOutput} The calculated savings per ton of feed.
+ */
+export function calculateMatrixSavings({ cornPrice, soybeanPrice }: { cornPrice: number; soybeanPrice: number; }): MatrixCalculationOutput {
+  // Assume a standard 250kg of soybean meal per ton of complete feed.
+  const soybeanMealPerTon = 250; // in kg
+  
+  // The matrix allows for a 5% reduction in soybean meal.
+  const soybeanReductionKg = soybeanMealPerTon * 0.05; // 5% of 250kg = 12.5kg
+
+  // This reduced amount of soybean is replaced by an equal weight of corn.
+  const cornIncreaseKg = soybeanReductionKg;
+  
+  // Convert prices from $/ton to $/kg
+  const soybeanPricePerKg = soybeanPrice / 1000;
+  const cornPricePerKg = cornPrice / 1000;
+  
+  // Calculate the cost of the removed soybean and the added corn.
+  const costOfRemovedSoybean = soybeanReductionKg * soybeanPricePerKg;
+  const costOfAddedCorn = cornIncreaseKg * cornPricePerKg;
+
+  // The savings per ton is the difference in cost.
+  const savingsPerTon = costOfRemovedSoybean - costOfAddedCorn;
+
+  return {
+    savingsPerTon: parseFloat(savingsPerTon.toFixed(2)),
   };
 }

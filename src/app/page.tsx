@@ -4,8 +4,8 @@ import { useState } from 'react';
 import type { z } from 'zod';
 import { Landmark, Feather } from 'lucide-react';
 
-import type { CalculationInput, CalculationOutput } from '@/lib/types';
-import { calculateRoi } from '@/lib/calculator';
+import type { CalculationInput, CalculationOutput, MatrixCalculationOutput } from '@/lib/types';
+import { calculateRoi, calculateMatrixSavings } from '@/lib/calculator';
 import { allAdditives } from '@/lib/additive-data';
 import { getSmartSuggestions, type SmartSuggestionsInput } from '@/ai/flows/smart-suggestions';
 
@@ -15,35 +15,52 @@ import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
   const [results, setResults] = useState<CalculationOutput | null>(null);
+  const [matrixResults, setMatrixResults] = useState<MatrixCalculationOutput | null>(null);
   const [suggestions, setSuggestions] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [selectedAdditive, setSelectedAdditive] = useState<string | null>(null);
+  const [calculationMode, setCalculationMode] = useState<'roi' | 'matrix'>('roi');
 
   const handleCalculate = async (data: CalculationInput, fcrImprovement: number) => {
     setIsCalculating(true);
     setSuggestions(null);
+    setResults(null);
+    setMatrixResults(null);
     setShowResults(true);
     setSelectedAdditive(data.additiveType);
 
-    const calculatedResults = calculateRoi(data, fcrImprovement);
-    setResults(calculatedResults);
+    const mode = data.applicationType === 'matrix' ? 'matrix' : 'roi';
+    setCalculationMode(mode);
 
-    try {
-      const aiInput: SmartSuggestionsInput = {
-        additiveType: data.additiveType,
-        feedCostPerLw: data.feedCostPerLw,
-        broilerWeight: data.broilerWeight,
-        mortalityRate: data.mortalityRate,
-        baselineFcr: data.fcr,
-        currentFcr: calculatedResults.withAdditive.improvedFcr,
-        allAdditives: allAdditives,
-      };
-      const aiResult = await getSmartSuggestions(aiInput);
-      setSuggestions(aiResult.suggestions);
-    } catch (error) {
-      console.error("Error fetching smart suggestions:", error);
-      setSuggestions("Could not retrieve AI suggestions at this time. Please try again later.");
+    if (mode === 'matrix') {
+        const matrixCalcResults = calculateMatrixSavings({
+            cornPrice: data.cornPrice!,
+            soybeanPrice: data.soybeanPrice!
+        });
+        setMatrixResults(matrixCalcResults);
+        // AI suggestions are not implemented for matrix view yet.
+        setSuggestions("AI suggestions are available for the 'on-top' application analysis.");
+    } else { // 'roi' mode
+        const calculatedResults = calculateRoi(data, fcrImprovement);
+        setResults(calculatedResults);
+
+        try {
+            const aiInput: SmartSuggestionsInput = {
+                additiveType: data.additiveType,
+                feedCostPerLw: data.feedCostPerLw,
+                broilerWeight: data.broilerWeight,
+                mortalityRate: data.mortalityRate,
+                baselineFcr: data.fcr,
+                currentFcr: calculatedResults.withAdditive.improvedFcr,
+                allAdditives: allAdditives,
+            };
+            const aiResult = await getSmartSuggestions(aiInput);
+            setSuggestions(aiResult.suggestions);
+        } catch (error) {
+            console.error("Error fetching smart suggestions:", error);
+            setSuggestions("Could not retrieve AI suggestions at this time. Please try again later.");
+        }
     }
 
     setIsCalculating(false);
@@ -73,6 +90,8 @@ export default function Home() {
             <div className="lg:col-span-3">
               <ResultsPanel 
                 results={results}
+                matrixResults={matrixResults}
+                calculationMode={calculationMode}
                 suggestions={suggestions} 
                 isCalculating={isCalculating}
                 showResults={showResults}
