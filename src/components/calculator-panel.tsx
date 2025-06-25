@@ -159,7 +159,7 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
 
                     <div className={cn(
                         "space-y-4 pt-2 animate-in fade-in-50 duration-300",
-                        selectedApplicationType === 'matrix' && "hidden"
+                        (selectedApplicationType === 'matrix' && !(selectedAdditive === "Jefo Pro Solution" || selectedAdditive === "Belfeed")) && "hidden"
                     )}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
