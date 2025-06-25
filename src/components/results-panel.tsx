@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BadgePercent, PiggyBank, Target, TrendingUp, Lightbulb, LineChart, DollarSign } from "lucide-react";
+import { BadgePercent, PiggyBank, Target, TrendingUp, Lightbulb, LineChart, DollarSign, Database, FlaskConical } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CalculationOutput, MatrixCalculationOutput } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -215,9 +215,20 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
                         </BarChart>
                     </ChartContainer>
                 </div>
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <MetricCard 
-                        icon={DollarSign}
+                        icon={Database}
+                        title="Baseline Cost / Ton"
+                        value={formatCurrency(matrixResults!.baselineCostPerTon)}
+                    />
+                    <MetricCard 
+                        icon={FlaskConical}
+                        title="Reformulated Cost / Ton"
+                        value={formatCurrency(matrixResults!.reformulatedCostPerTon)}
+                        isPositive={matrixResults!.reformulatedCostPerTon < matrixResults!.baselineCostPerTon}
+                    />
+                    <MetricCard 
+                        icon={PiggyBank}
                         title="Total Savings per Ton"
                         value={formatCurrency(matrixResults!.savingsPerTon)}
                         isPositive={matrixResults!.savingsPerTon > 0}
@@ -232,7 +243,7 @@ type MetricCardProps = {
     icon: React.ElementType;
     title: string;
     value: string;
-    isPositive: boolean;
+    isPositive?: boolean;
 };
 
 function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
@@ -247,7 +258,8 @@ function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
                 </div>
                 <p className={cn(
                     "text-3xl font-bold tracking-tight",
-                     isPositive ? "text-green-600" : "text-red-600"
+                     isPositive === true && "text-green-600",
+                     isPositive === false && "text-red-600"
                 )}>
                     {value}
                 </p>

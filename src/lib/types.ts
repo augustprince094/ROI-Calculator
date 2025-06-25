@@ -53,5 +53,7 @@ export interface CalculationOutput {
 }
 
 export interface MatrixCalculationOutput {
+  baselineCostPerTon: number;
+  reformulatedCostPerTon: number;
   savingsPerTon: number;
 }
