@@ -80,7 +80,7 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                       <InputField name="broilerWeight" label="Broiler Weight (kg)" form={form} />
                       <InputField name="mortalityRate" label="Mortality Rate (%)" form={form} />
                       <InputField name="fcr" label="Baseline FCR" form={form} />
-                      <InputField name="feedCostPerLw" label="Feed Cost ($/kg live weight)" form={form} />
+                      <InputField name="feedCostPerLw" label="Feed Cost ($/broiler weight)" form={form} />
                   </div>
               </div>
 
