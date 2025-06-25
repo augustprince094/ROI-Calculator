@@ -17,8 +17,8 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
     // Feed consumed by birds that survive to market
     const feedForSurvivors = survivingBroilers * data.broilerWeight * fcr;
 
-    // Feed consumed by birds that die (assuming they consume half on average)
-    const feedForMortalities = deadBroilers * (data.broilerWeight * fcr / 2);
+    // Feed consumed by birds that die (assuming they consume 20% on average)
+    const feedForMortalities = deadBroilers * (data.broilerWeight * fcr * 0.2);
 
     const totalFeedConsumed = feedForSurvivors + feedForMortalities;
     const totalFeedCost = totalFeedConsumed * pricePerKgFeed;
@@ -172,7 +172,7 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
     const survivingBroilers = data.numberOfBroilers * (1 - adjustedMortalityRate / 100);
     const deadBroilers = data.numberOfBroilers - survivingBroilers;
     const feedForSurvivors = survivingBroilers * data.broilerWeight * data.fcr;
-    const feedForMortalities = deadBroilers * (data.broilerWeight * data.fcr / 2);
+    const feedForMortalities = deadBroilers * (data.broilerWeight * data.fcr * 0.2);
     const totalFeedConsumedTons = (feedForSurvivors + feedForMortalities) / 1000;
 
     const savingsPerCycle = totalFeedConsumedTons * savingsPerTon;
