@@ -75,7 +75,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
           <CardDescription>
             Here is the financial breakdown based on your inputs.
           </CardDescription>
-        </Header>
+        </CardHeader>
         <CardContent>
           {isCalculating && !results ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -146,7 +146,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                 </div>
                 <CardDescription>
                     AI-powered insights to help optimize your farming practices.
-                </CardDescription>
+                </Description>
             </Header>
             <CardContent>
                 {isCalculating && !suggestions ? (
