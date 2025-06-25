@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -82,48 +83,45 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
 
               <div className="p-4 border rounded-lg space-y-4 bg-card">
                     <h3 className="font-semibold text-foreground">Jefo Solutions</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                          control={form.control}
-                          name="additiveType"
-                          render={({ field }) => (
-                          <FormItem>
-                              <FormLabel>Additive Type</FormLabel>
-                              <Select
-                                  onValueChange={(value) => {
-                                      field.onChange(value);
-                                      const data = additiveData[value as keyof typeof additiveData];
-                                      if (data) {
-                                          form.setValue("additiveInclusionRate", data.inclusionRate);
-                                          form.setValue("additiveCost", data.cost);
-                                      }
-                                      if (value !== 'Jefo Pro Solution') {
-                                        form.clearErrors('jefoProApplicationType');
-                                        form.setValue('jefoProApplicationType', undefined);
-                                      } else {
-                                        form.setValue('jefoProApplicationType', 'on-top');
-                                      }
-                                  }}
-                                  defaultValue={field.value}
-                              >
-                                  <FormControl>
-                                      <SelectTrigger>
-                                          <SelectValue placeholder="Select an additive" />
-                                      </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                      {Object.keys(additiveData).map((name) => (
-                                          <SelectItem key={name} value={name}>{name}</SelectItem>
-                                      ))}
-                                  </SelectContent>
-                              </Select>
-                              <FormMessage />
-                          </FormItem>
-                          )}
-                      />
-                      <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
-                      <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} />
-                  </div>
+                    
+                    <FormField
+                        control={form.control}
+                        name="additiveType"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Additive Type</FormLabel>
+                            <Select
+                                onValueChange={(value) => {
+                                    field.onChange(value);
+                                    const data = additiveData[value as keyof typeof additiveData];
+                                    if (data) {
+                                        form.setValue("additiveInclusionRate", data.inclusionRate);
+                                        form.setValue("additiveCost", data.cost);
+                                    }
+                                    if (value !== 'Jefo Pro Solution') {
+                                      form.clearErrors('jefoProApplicationType');
+                                      form.setValue('jefoProApplicationType', undefined);
+                                    } else {
+                                      form.setValue('jefoProApplicationType', 'on-top');
+                                    }
+                                }}
+                                defaultValue={field.value}
+                            >
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select an additive" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {Object.keys(additiveData).map((name) => (
+                                        <SelectItem key={name} value={name}>{name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
                     
                     {selectedAdditive === "Jefo Pro Solution" && (
                         <FormField
@@ -158,6 +156,10 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                         />
                     )}
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
+                      <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} />
+                    </div>
               </div>
             
             <Button type="submit" className="w-full" size="lg" disabled={isCalculating}>
