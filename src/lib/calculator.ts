@@ -114,24 +114,41 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
     const baselineCostPerTon = calculateTotalCost(feedIngredients);
 
     // 2. Define the reformulated diet.
-    // This performs a simple substitution of corn with the selected additive.
-    const reformulatedIngredients: {name: string, quantityKg: number, pricePerTon: number}[] = JSON.parse(JSON.stringify(feedIngredients));
+    // Start with a deep copy of the baseline ingredients.
+    const reformulatedIngredients = JSON.parse(JSON.stringify(feedIngredients));
+
+    // Apply percentage-based changes to ingredient quantities
+    const ingredientAdjustments: {[key: string]: number} = {
+        "Corn": 1.036,                 // +3.6%
+        "Soybean meal": 0.956,          // -4.4%
+        "Soybean oil": 0.93,            // -7.0%
+        "Synthetic AA": 0.964,          // -3.6%
+        "Other raw materials": 1.006,   // +0.6%
+    };
     
-    const additiveQuantityKg = data.additiveInclusionRate / 1000;
-    
-    // Reduce corn quantity to make space for the additive
-    const cornIngredient = reformulatedIngredients.find((ing) => ing.name === "Corn");
-    if (cornIngredient) {
-        cornIngredient.quantityKg -= additiveQuantityKg;
-    }
+    reformulatedIngredients.forEach((ingredient: {name: string, quantityKg: number}) => {
+        if (ingredientAdjustments[ingredient.name]) {
+            ingredient.quantityKg *= ingredientAdjustments[ingredient.name];
+        }
+    });
 
     // Add the additive as an ingredient
+    const additiveQuantityKg = data.additiveInclusionRate / 1000;
     reformulatedIngredients.push({
         name: data.additiveType,
         quantityKg: additiveQuantityKg,
         pricePerTon: data.additiveCost * 1000,
     });
+    
+    // Sum the weights of all ingredients to see how far off we are from 1000kg
+    const totalWeightBeforeBalancing = reformulatedIngredients.reduce((sum: number, ing: {quantityKg: number}) => sum + ing.quantityKg, 0);
 
+    // Re-balance the diet to 1000 kg by adjusting the corn quantity
+    const cornIngredient = reformulatedIngredients.find((ing: {name: string}) => ing.name === "Corn");
+    if (cornIngredient) {
+        const difference = 1000 - totalWeightBeforeBalancing;
+        cornIngredient.quantityKg += difference;
+    }
 
     // 3. Calculate reformulated cost per ton (now includes additive cost)
     const reformulatedCostPerTon = calculateTotalCost(reformulatedIngredients);
