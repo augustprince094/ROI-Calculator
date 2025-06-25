@@ -18,8 +18,16 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
   const costPerKgLiveWeightBaseline = totalLiveWeightBaseline > 0 ? totalFeedCostBaseline / totalLiveWeightBaseline : 0;
 
   // --- Calculation With Additive ---
+  // Adjust mortality rate based on the selected additive. The baseline calculation remains unaffected.
+  let adjustedMortalityRate = data.mortalityRate;
+  if (data.additiveType === 'Jefo Pro Solution') {
+    adjustedMortalityRate = Math.max(0, data.mortalityRate - 1.5); // Ensure rate doesn't go below 0
+  } else if (data.additiveType === 'Jefo P(OA+EO)') {
+    adjustedMortalityRate = Math.max(0, data.mortalityRate - 2); // Ensure rate doesn't go below 0
+  }
+
   // This represents the scenario using the selected Jefo solution.
-  const survivingBroilersWithAdditive = data.numberOfBroilers * (1 - data.mortalityRate / 100);
+  const survivingBroilersWithAdditive = data.numberOfBroilers * (1 - adjustedMortalityRate / 100);
   const totalLiveWeightWithAdditive = survivingBroilersWithAdditive * data.broilerWeight;
   
   // Total feed consumed is lower due to the improved FCR.
@@ -120,7 +128,7 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
                 totalWeightChange += change;
                 break;
             case "Soybean meal":
-                change = originalQuantities[ingredient.name] * -0.045; // 4.5% decrease
+                change = originalQuantologies[ingredient.name] * -0.045; // 4.5% decrease
                 ingredient.quantityKg += change;
                 totalWeightChange += change;
                 break;
@@ -149,8 +157,16 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
     // 4. Calculate savings per ton
     const savingsPerTon = baselineCostPerTon - reformulatedCostPerTon;
 
+    // Adjust mortality rate for certain additives before calculating cycle savings.
+    // Jefo P(OA+EO) does not have a matrix application option.
+    // Belfeed has a matrix option, but no mortality reduction was specified.
+    let adjustedMortalityRate = data.mortalityRate;
+    if (data.additiveType === 'Jefo Pro Solution') {
+        adjustedMortalityRate = Math.max(0, data.mortalityRate - 1.5); // Ensure it doesn't go below 0
+    }
+
     // 5. Calculate total feed consumed in the cycle to find savings per cycle
-    const survivingBroilers = data.numberOfBroilers * (1 - data.mortalityRate / 100);
+    const survivingBroilers = data.numberOfBroilers * (1 - adjustedMortalityRate / 100);
     const totalLiveWeight = survivingBroilers * data.broilerWeight;
     const totalFeedConsumedTons = (totalLiveWeight * data.fcr) / 1000;
     const savingsPerCycle = totalFeedConsumedTons * savingsPerTon;
