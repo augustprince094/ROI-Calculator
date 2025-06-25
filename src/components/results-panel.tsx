@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { Bar, BarChart, XAxis, YAxis, Tooltip, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { additiveData, type AdditiveName } from "@/lib/additive-data";
+import { feedIngredients } from "@/lib/calculator";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 
 type ResultsPanelProps = {
@@ -216,6 +218,30 @@ function MatrixResultsView({ matrixResults, additiveType }: Pick<ResultsPanelPro
                             </Bar>
                         </BarChart>
                     </ChartContainer>
+                </div>
+                <div className="mb-8">
+                    <h4 className="text-lg font-semibold mb-2">Baseline Feed Composition</h4>
+                    <p className="text-sm text-muted-foreground mb-4">Based on a 1-ton (1000kg) formulation.</p>
+                    <div className="border rounded-lg overflow-hidden">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[200px]">Ingredient</TableHead>
+                                    <TableHead className="text-right">Quantity (kg)</TableHead>
+                                    <TableHead className="text-right">Price ($/ton)</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {feedIngredients.map((ing) => (
+                                    <TableRow key={ing.name}>
+                                        <TableCell className="font-medium">{ing.name}</TableCell>
+                                        <TableCell className="text-right">{ing.quantityKg.toFixed(1)}</TableCell>
+                                        <TableCell className="text-right">{formatCurrency(ing.pricePerTon, 0)}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <MetricCard 
