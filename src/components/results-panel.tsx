@@ -33,6 +33,14 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
     return `${value.toFixed(1)} %`;
   };
 
+  const formatRatio = (percentage: number) => {
+    if (percentage === Infinity) {
+      return "∞ : 1";
+    }
+    const ratio = percentage / 100;
+    return `${ratio.toFixed(1)} : 1`;
+  };
+
   const baselineColor = "#AEAEAE";
   const additiveColor = (additiveType && additiveData[additiveType as AdditiveName]?.color) || "hsl(var(--primary))";
 
@@ -120,7 +128,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                 <MetricCard 
                     icon={TrendingUp}
                     title="Return on Investment (ROI)"
-                    value={formatPercent(results.comparison.roi)}
+                    value={formatRatio(results.comparison.roi)}
                     isPositive={results.comparison.roi > 0}
                 />
             </div>
@@ -139,7 +147,7 @@ export function ResultsPanel({ results, suggestions, isCalculating, showResults,
                 <CardDescription>
                     AI-powered insights to help optimize your farming practices.
                 </CardDescription>
-            </CardHeader>
+            </Header>
             <CardContent>
                 {isCalculating && !suggestions ? (
                     <div className="space-y-2">
@@ -176,7 +184,7 @@ function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
                 </div>
                 <p className={cn(
                     "text-3xl font-bold tracking-tight",
-                     isPositive ? "text-green-600" : "text-red-600",
+                     isPositive ? "text-green-600" : "text-red-600"
                 )}>
                     {value}
                 </p>
