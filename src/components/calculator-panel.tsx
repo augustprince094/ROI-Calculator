@@ -146,7 +146,7 @@ function InputField({name, label, form}: InputFieldProps) {
             <FormItem>
                 <FormLabel>{label}</FormLabel>
                 <FormControl>
-                <Input type="number" step="any" placeholder={`Enter ${label.toLowerCase()}`} {...field} />
+                <Input type="number" step="any" placeholder={`Enter ${label.toLowerCase()}`} {...field} value={field.value ?? ""} />
                 </FormControl>
                 <FormMessage />
             </FormItem>
