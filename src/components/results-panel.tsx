@@ -5,8 +5,8 @@ import { BadgePercent, PiggyBank, Target, TrendingUp, Lightbulb, LineChart, Doll
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CalculationOutput, MatrixCalculationOutput } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell, Legend } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Bar, BarChart, XAxis, YAxis, Tooltip, Cell } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { additiveData, type AdditiveName } from "@/lib/additive-data";
 
 
@@ -134,6 +134,12 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
         { name: additiveType || 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight, fill: additiveColor },
     ] : [];
 
+    const chartConfig = {
+      'Cost/kg': {
+        label: 'Cost/kg',
+      },
+    } satisfies ChartConfig;
+
     return (
         <Card className="shadow-lg animate-in fade-in-50 duration-500">
             <CardHeader>
@@ -143,7 +149,7 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
             <CardContent>
                 <div className="mb-6">
                     <h4 className="text-lg font-semibold mb-2">Cost per kg Live Weight Comparison</h4>
-                     <ResponsiveContainer width="100%" height={250}>
+                     <ChartContainer config={chartConfig} className="h-[250px] w-full">
                         <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
                             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                             <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(Number(value), 3)} />
@@ -159,7 +165,7 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
                                 ))}
                             </Bar>
                         </BarChart>
-                    </ResponsiveContainer>
+                    </ChartContainer>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <MetricCard icon={Target} title="Improved FCR" value={parseFloat(results!.withAdditive.improvedFcr.toFixed(2)).toString()} isPositive={true} />
@@ -176,6 +182,13 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
     const chartData = matrixResults ? [
         { name: "Savings", value: matrixResults.savingsPerTon, fill: "hsl(var(--primary))" }
     ] : [];
+
+    const chartConfig = {
+      value: {
+        label: "Savings",
+        color: "hsl(var(--primary))",
+      },
+    } satisfies ChartConfig;
     
     return (
         <Card className="shadow-lg animate-in fade-in-50 duration-500">
@@ -186,7 +199,7 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
             <CardContent>
                 <div className="mb-6">
                     <h4 className="text-lg font-semibold mb-2">Savings per Ton of Complete Feed</h4>
-                     <ResponsiveContainer width="100%" height={250}>
+                     <ChartContainer config={chartConfig} className="w-full h-[250px]">
                         <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ top: 20, right: 20, left: 10, bottom: 5 }}>
                             <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(Number(value))}/>
                             <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
@@ -200,7 +213,7 @@ function MatrixResultsView({ matrixResults }: Pick<ResultsPanelProps, 'matrixRes
                                 <Cell fill="hsl(var(--primary))" />
                             </Bar>
                         </BarChart>
-                    </ResponsiveContainer>
+                    </ChartContainer>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
                     <MetricCard 
