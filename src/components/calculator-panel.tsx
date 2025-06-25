@@ -43,7 +43,7 @@ const defaultValues: Partial<CalculationInput> = {
   additiveType: "Jefo Pro Solution",
   additiveInclusionRate: 125,
   additiveCost: 12,
-  jefoProApplicationType: 'on-top',
+  applicationType: 'on-top',
 };
 
 export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelProps) {
@@ -98,11 +98,11 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                                         form.setValue("additiveInclusionRate", data.inclusionRate);
                                         form.setValue("additiveCost", data.cost);
                                     }
-                                    if (value !== 'Jefo Pro Solution') {
-                                      form.clearErrors('jefoProApplicationType');
-                                      form.setValue('jefoProApplicationType', undefined);
+                                    if (value === 'Jefo Pro Solution' || value === 'Belfeed') {
+                                      form.setValue('applicationType', 'on-top');
                                     } else {
-                                      form.setValue('jefoProApplicationType', 'on-top');
+                                      form.clearErrors('applicationType');
+                                      form.setValue('applicationType', undefined);
                                     }
                                 }}
                                 defaultValue={field.value}
@@ -123,10 +123,10 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                         )}
                     />
                     
-                    {selectedAdditive === "Jefo Pro Solution" && (
+                    {(selectedAdditive === "Jefo Pro Solution" || selectedAdditive === "Belfeed") && (
                         <FormField
                             control={form.control}
-                            name="jefoProApplicationType"
+                            name="applicationType"
                             render={({ field }) => (
                             <FormItem className="space-y-2 pt-2">
                                 <FormLabel>Application Type</FormLabel>

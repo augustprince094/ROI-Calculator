@@ -16,16 +16,16 @@ export const formSchema = z.object({
   additiveInclusionRate: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
   additiveCost: z.coerce.number({ required_error: "Required" }).positive("Must be positive"),
 
-  // Conditional field for Jefo Pro Solution
-  jefoProApplicationType: z.enum(['matrix', 'on-top']).optional(),
+  // Conditional field for Jefo Pro Solution & Belfeed
+  applicationType: z.enum(['matrix', 'on-top']).optional(),
 }).refine(data => {
-  if (data.additiveType === 'Jefo Pro Solution') {
-    return data.jefoProApplicationType !== undefined;
+  if (data.additiveType === 'Jefo Pro Solution' || data.additiveType === 'Belfeed') {
+    return data.applicationType !== undefined;
   }
   return true;
 }, {
-  message: "Application type is required for Jefo Pro Solution",
-  path: ['jefoProApplicationType'],
+  message: "Application type is required for this additive",
+  path: ['applicationType'],
 });
 
 
