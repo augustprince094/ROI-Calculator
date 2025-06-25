@@ -2,7 +2,7 @@ import type { CalculationInput, CalculationOutput, MatrixCalculationOutput } fro
 
 /**
  * Calculates the financial impact of using a feed additive, accounting for feed consumed by mortalities.
- * It assumes birds that die consume, on average, half the feed of a bird that survives to market.
+ * It assumes birds that die consume, on average, 20% of the feed of a bird that survives to market.
  */
 export function calculateRoi(data: CalculationInput, fcrImprovement: number): CalculationOutput {
   const pricePerKgFeed = data.fcr > 0 ? data.feedCostPerLw / data.fcr : 0;
@@ -177,9 +177,15 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
 
     const savingsPerCycle = totalFeedConsumedTons * savingsPerTon;
 
+    // 6. Calculate ROI
+    const totalAdditiveConsumedKg = (totalFeedConsumedTons * data.additiveInclusionRate) / 1000;
+    const totalAdditiveCost = totalAdditiveConsumedKg * data.additiveCost;
+    const roi = totalAdditiveCost > 0 ? (savingsPerCycle / totalAdditiveCost) * 100 : (savingsPerCycle > 0 ? Infinity : 0);
+
     return {
         baselineCostPerTon: parseFloat(baselineCostPerTon.toFixed(2)),
         savingsPerTon: parseFloat(savingsPerTon.toFixed(2)),
         savingsPerCycle: Math.round(savingsPerCycle),
+        roi,
     };
 }

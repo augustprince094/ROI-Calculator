@@ -29,6 +29,19 @@ const formatCurrency = (value: number, digits: number = 2) => {
     }).format(value);
 };
 
+const formatPercent = (value: number) => {
+    if (value === Infinity) return "∞ %";
+    return `${value.toFixed(1)} %`;
+};
+
+const formatRatio = (percentage: number) => {
+    if (percentage === Infinity) {
+        return "∞ : 1";
+    }
+    const ratio = percentage / 100;
+    return `${ratio.toFixed(1)} : 1`;
+};
+
 export function ResultsPanel(props: ResultsPanelProps) {
   const { showResults, isCalculating, calculationMode, results, matrixResults } = props;
 
@@ -113,19 +126,6 @@ export function ResultsPanel(props: ResultsPanelProps) {
 
 
 function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'results' | 'additiveType'>) {
-    const formatPercent = (value: number) => {
-        if (value === Infinity) return "∞ %";
-        return `${value.toFixed(1)} %`;
-    };
-    
-    const formatRatio = (percentage: number) => {
-        if (percentage === Infinity) {
-            return "∞ : 1";
-        }
-        const ratio = percentage / 100;
-        return `${ratio.toFixed(1)} : 1`;
-    };
-
     const baselineColor = "#AEAEAE";
     const additiveColor = (additiveType && additiveData[additiveType as AdditiveName]?.color) || "hsl(var(--primary))";
 
@@ -217,7 +217,7 @@ function MatrixResultsView({ matrixResults, additiveType }: Pick<ResultsPanelPro
                         </BarChart>
                     </ChartContainer>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <MetricCard 
                         icon={Database}
                         title="Baseline Cost / Ton"
@@ -234,6 +234,12 @@ function MatrixResultsView({ matrixResults, additiveType }: Pick<ResultsPanelPro
                         title="Savings per production cycle"
                         value={formatCurrency(matrixResults!.savingsPerCycle, 0)}
                         isPositive={matrixResults!.savingsPerCycle > 0}
+                    />
+                     <MetricCard 
+                        icon={TrendingUp}
+                        title="Return on Investment (ROI)"
+                        value={formatRatio(matrixResults!.roi)}
+                        isPositive={matrixResults!.roi > 0}
                     />
                 </div>
             </CardContent>
@@ -269,5 +275,3 @@ function MetricCard({ icon: Icon, title, value, isPositive }: MetricCardProps) {
         </div>
     );
 }
-
-    

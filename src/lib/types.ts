@@ -56,4 +56,5 @@ export interface MatrixCalculationOutput {
   baselineCostPerTon: number;
   savingsPerTon: number;
   savingsPerCycle: number;
+  roi: number;
 }
