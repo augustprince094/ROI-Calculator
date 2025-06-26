@@ -105,7 +105,7 @@ export function ResultsPanel(props: ResultsPanelProps) {
             <CardHeader>
                 <div className="flex items-center gap-2">
                     <Lightbulb className="h-5 w-5 text-yellow-500"/>
-                    <CardTitle>Smart Suggestions</CardTitle>
+                    <CardTitle>Smart Advisory</CardTitle>
                 </div>
                 <CardDescription>
                     AI-powered insights to help optimize your farming practices.
