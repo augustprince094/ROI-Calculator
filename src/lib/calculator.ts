@@ -90,11 +90,11 @@ export function calculateRoi(data: CalculationInput, fcrImprovement: number): Ca
  * NOTE: Corn quantity adjusted to make the total sum 1000kg. Other raw material price updated per user request.
  */
 const feedIngredients = [
-    { name: "Corn", quantityKg: 518.7, pricePerTon: 232 },
-    { name: "Soybean meal", quantityKg: 396.0, pricePerTon: 624 },
-    { name: "Soybean oil", quantityKg: 43.6, pricePerTon: 1600 },
-    { name: "Synthetic AA", quantityKg: 7.8, pricePerTon: 2854 },
-    { name: "Other raw materials", quantityKg: 33.9, pricePerTon: 10 }
+    { name: "Corn", quantityKg: 488.2, pricePerTon: 232 },
+    { name: "Soybean meal", quantityKg: 434.3, pricePerTon: 624 },
+    { name: "Soybean oil", quantityKg: 44.6, pricePerTon: 1600 },
+    { name: "Synthetic AA", quantityKg: 6.5, pricePerTon: 2854 },
+    { name: "Other raw materials", quantityKg: 26.4, pricePerTon: 10 }
 ];
 
 /**
@@ -120,11 +120,10 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
 
     // Apply percentage-based changes to ingredient quantities
     const ingredientAdjustments: {[key: string]: number} = {
-        "Corn": 1.036,                 // +3.6%
-        "Soybean meal": 0.956,          // -4.4%
-        "Soybean oil": 0.93,            // -7.0%
+        "Corn": 1.0374,                 // +3.74%
+        "Soybean meal": 0.9581,          // -4.19%
+        "Soybean oil": 0.9344,            // -6.56%
         "Synthetic AA": 0.964,          // -3.6%
-        "Other raw materials": 1.006,   // +0.6%
     };
     
     reformulatedIngredients.forEach((ingredient: {name: string, quantityKg: number}) => {
@@ -193,3 +192,5 @@ export function calculateMatrixSavings(data: CalculationInput): MatrixCalculatio
         reformulatedDiet: reformulatedDietForDisplay,
     };
 }
+
+    
