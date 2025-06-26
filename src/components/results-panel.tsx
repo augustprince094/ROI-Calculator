@@ -1,5 +1,7 @@
+
 "use client";
 
+import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BadgePercent, PiggyBank, Target, TrendingUp, Lightbulb, LineChart, DollarSign, Database } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -136,6 +138,18 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
         { name: additiveType || 'With Additive', 'Cost/kg': results.withAdditive.costPerKgLiveWeight, fill: additiveColor },
     ] : [];
 
+    const yAxisDomain = useMemo(() => {
+        if (!results) {
+            return [0, 'auto'];
+        }
+        const dataMin = Math.min(results.baseline.costPerKgLiveWeight, results.withAdditive.costPerKgLiveWeight);
+        // Start the axis at 95% of the minimum value to accentuate the difference.
+        // Floor to 2 decimal places to get a clean number.
+        const domainStart = Math.floor(dataMin * 0.95 * 100) / 100;
+        // Ensure the domain doesn't start below zero.
+        return [Math.max(0, domainStart), 'auto'];
+    }, [results]);
+
     const chartConfig = {
       'Cost/kg': {
         label: 'Cost/kg',
@@ -154,7 +168,14 @@ function RoiResultsView({ results, additiveType }: Pick<ResultsPanelProps, 'resu
                      <ChartContainer config={chartConfig} className="h-[250px] w-full">
                         <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
                             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(Number(value), 2)} />
+                            <YAxis 
+                                stroke="hsl(var(--muted-foreground))" 
+                                fontSize={12} 
+                                tickLine={false} 
+                                axisLine={false} 
+                                tickFormatter={(value) => formatCurrency(Number(value), 2)}
+                                domain={yAxisDomain}
+                             />
                             <Tooltip
                                 cursor={{ fill: 'hsl(var(--muted))', radius: 4 }}
                                 content={<ChartTooltipContent 
