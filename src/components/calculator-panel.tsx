@@ -76,11 +76,11 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
               <div className="p-4 border rounded-lg space-y-4 bg-card">
                   <h3 className="font-semibold text-foreground">Your Farm's Data</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <InputField name="numberOfBroilers" label="Number of birds per production cycle" form={form} />
-                      <InputField name="broilerWeight" label="Broiler Weight (kg)" form={form} />
-                      <InputField name="mortalityRate" label="Mortality Rate (%)" form={form} />
-                      <InputField name="fcr" label="Baseline FCR" form={form} />
-                      <InputField name="feedCostPerLw" label="Feed Cost ($/broiler weight)" form={form} />
+                      <InputField name="numberOfBroilers" label="Number of birds per production cycle" form={form} placeholder="10000" />
+                      <InputField name="broilerWeight" label="Broiler Weight (kg)" form={form} placeholder="2.5" />
+                      <InputField name="mortalityRate" label="Mortality Rate (%)" form={form} placeholder="4" />
+                      <InputField name="fcr" label="Baseline FCR" form={form} placeholder="1.6" />
+                      <InputField name="feedCostPerLw" label="Feed Cost ($/broiler weight)" form={form} placeholder="0.72" />
                   </div>
               </div>
 
@@ -162,8 +162,8 @@ export function CalculatorPanel({ onCalculate, isCalculating }: CalculatorPanelP
                         (selectedApplicationType === 'matrix' && !(selectedAdditive === "Jefo Pro Solution" || selectedAdditive === "Belfeed")) && "hidden"
                     )}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} />
-                          <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} />
+                          <InputField name="additiveInclusionRate" label="Additive Inclusion (g/ton)" form={form} placeholder="125" />
+                          <InputField name="additiveCost" label="Additive Cost ($/kg)" form={form} placeholder="12" />
                         </div>
                     </div>
               </div>
@@ -187,9 +187,10 @@ type InputFieldProps = {
     name: keyof CalculationInput;
     label: string;
     form: UseFormReturn<CalculationInput>;
+    placeholder?: string;
 }
 
-function InputField({name, label, form}: InputFieldProps) {
+function InputField({name, label, form, placeholder}: InputFieldProps) {
     return (
         <FormField
             control={form.control}
@@ -203,7 +204,7 @@ function InputField({name, label, form}: InputFieldProps) {
                     <Input 
                       type="number" 
                       step="any" 
-                      placeholder={`Enter ${label.toLowerCase()}`} 
+                      placeholder={placeholder || `Enter ${label.toLowerCase()}`} 
                       {...field} 
                       value={value}
                       onChange={e => field.onChange(e.target.value === '' ? undefined : e.target.valueAsNumber)}
